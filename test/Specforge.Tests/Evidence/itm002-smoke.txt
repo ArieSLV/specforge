@@ -1,0 +1,36 @@
+ITEM-002 smoke test — MCP initialize + info exchange against the published binary
+==================================================================================
+
+Binary:   D:\Work\specforge\bin\specforge.exe  (self-contained single-file win-x64)
+Cwd:      D:\Work\specforge   (dogfooded .specforge.json present at this root)
+Date:     2026-05-29
+Transport: MCP stdio (newline-delimited JSON-RPC 2.0)
+
+--- SENT (stdin) ---
+{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"itm002-smoke","version":"0.0.0"}}}
+{"jsonrpc":"2.0","method":"notifications/initialized"}
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"info","arguments":{}}}
+
+--- RECEIVED (stdout, raw) ---
+{"result":{"protocolVersion":"2024-11-05","capabilities":{"logging":{},"tools":{}},"serverInfo":{"name":"specforge","version":"1.0.0+85cdccd0108e5a9aeacd92e264113239f1f0870d"}},"id":1,"jsonrpc":"2.0"}
+{"result":{"content":[{"type":"text","text":"{\"binaryVersion\":\"1.0.0+85cdccd0108e5a9aeacd92e264113239f1f0870d\",\"supportedSchemaVersionRange\":[1,1],\"activePackage\":\"specforge-mvp\",\"configPath\":\"D:\\Work\\specforge\\.specforge.json\"}"}]},"id":2,"jsonrpc":"2.0"}
+
+--- DECODED info payload (id:2 content[0].text) ---
+{
+  "binaryVersion": "1.0.0+85cdccd0108e5a9aeacd92e264113239f1f0870d",
+  "supportedSchemaVersionRange": [1, 1],
+  "activePackage": "specforge-mvp",
+  "configPath": "D:\\Work\\specforge\\.specforge.json"
+}
+
+--- VERIFICATION ---
+[PASS] initialize handshake succeeded; serverInfo.name == "specforge".
+[PASS] tools/call info returned the dogfooded package name: activePackage == "specforge-mvp".
+[PASS] configPath resolved to the repo-root .specforge.json (DEC-002 discovery walk-up).
+[PASS] supportedSchemaVersionRange == [1, 1] (DEC-006).
+[PASS] All log output went to stderr only; stdout carried protocol payloads exclusively (DEC-003).
+
+Notes:
+- The MCP host uses the ModelContextProtocol.Core 1.3.0 low-level server surface
+  (McpServerOptions.Handlers + McpServer.Create over StdioServerTransport).
+- The info tool's payload is delivered as a JSON text content block; the AI parses content[0].text.

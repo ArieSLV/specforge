@@ -1,0 +1,65 @@
+using System.Text.Json;
+
+using Microsoft.Extensions.Logging;
+
+using Specforge.Core.Configuration;
+using Specforge.Core.Exceptions;
+
+namespace Specforge.Mcp.Tools;
+
+/// <summary>
+/// Maps Core's typed exceptions to MCP error envelopes (DEC-007 catalog). ITEM-002 covers the five
+/// codes its scope produces plus the generic <c>specforge.tool.internal_error</c> catch-all; ITEM-011
+/// centralizes the full table.
+/// </summary>
+public sealed class ToolExceptionMapper(ILogger<ToolExceptionMapper> logger)
+{
+    /// <summary>Converts <paramref name="exception"/> to the envelope to surface to the caller.</summary>
+    public McpErrorEnvelope Map(Exception exception)
+    {
+        switch (exception)
+        {
+            case SpecforgeConfigNotFoundException e:
+                return new McpErrorEnvelope(
+                    e.ErrorCode, e.Message,
+                    "run init to generate .specforge.json at the project root",
+                    Data(new { searchedPath = e.SearchedPath }));
+
+            case SpecforgeSchemaVersionException e:
+                return new McpErrorEnvelope(
+                    e.ErrorCode, e.Message, e.Suggestion,
+                    Data(new { path = e.Path, claimedVersion = e.ClaimedVersion, supportedRange = e.SupportedRange }));
+
+            case SpecforgeConfigValidationException e:
+                return new McpErrorEnvelope(
+                    e.ErrorCode, e.Message,
+                    "fix the listed fields in .specforge.json",
+                    Data(new { path = e.Path, errors = e.Errors.Select(x => new { pointer = x.Pointer, message = x.Message }) }));
+
+            case SpecforgePackageNotSelectedException e:
+                return new McpErrorEnvelope(
+                    e.ErrorCode, e.Message,
+                    "call use_package with one of the listed names",
+                    Data(new { availablePackages = e.AvailablePackages.Select(ToPackageData) }));
+
+            case SpecforgeUnknownPackageException e:
+                return new McpErrorEnvelope(
+                    e.ErrorCode, e.Message,
+                    "call use_package with one of the listed names",
+                    Data(new { requestedName = e.RequestedName, availablePackages = e.AvailablePackages.Select(ToPackageData) }));
+
+            default:
+                string correlationId = Guid.NewGuid().ToString("n");
+                logger.LogError(exception, "Unhandled exception in tool invocation. correlationId={CorrelationId}", correlationId);
+                return new McpErrorEnvelope(
+                    "specforge.tool.internal_error",
+                    "an internal error occurred while handling the tool call",
+                    "check the specforge stderr log entry tagged with the correlation id",
+                    Data(new { correlationId }));
+        }
+    }
+
+    private static object ToPackageData(SpecforgePackageConfig package) => new { name = package.Name, path = package.Path };
+
+    private static JsonElement Data(object value) => JsonSerializer.SerializeToElement(value);
+}

@@ -21,8 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Test project references Core (the assembly the boundary test scans). -->
+    <!-- DEC-003: Tests depends on both projects. Core is the assembly the boundary test scans;
+         Mcp is exercised in-proc (no real stdio handshake) for tool tests. -->
     <ProjectReference Include="..\..\src\Specforge.Core\Specforge.Core.csproj" />
+    <ProjectReference Include="..\..\src\Specforge.Mcp\Specforge.Mcp.csproj" />
   </ItemGroup>
 
 </Project>

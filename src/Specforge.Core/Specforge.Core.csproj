@@ -5,4 +5,9 @@
     <AssemblyName>Specforge.Core</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- DEC-003: Core depends only on BCL + Markdig + YamlDotNet + Logging.Abstractions. -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
 </Project>

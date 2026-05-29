@@ -12,4 +12,17 @@
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Runtime baseline libraries (DEC-003 §"Baseline Libraries"). Introduced by ITEM-002+. -->
+    <!-- MCP host (Specforge.Mcp). ModelContextProtocol.Core is the low-level, no-Hosting surface. -->
+    <PackageVersion Include="ModelContextProtocol.Core" Version="1.3.0" />
+    <!-- Logging: Abstractions in Core, Console (stderr) in Mcp. -->
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
+    <!-- Markdown + YAML for document model / skill frontmatter (ITEM-004/007+). -->
+    <PackageVersion Include="Markdig" Version="1.2.0" />
+    <PackageVersion Include="YamlDotNet" Version="18.0.0" />
+  </ItemGroup>
+
 </Project>
