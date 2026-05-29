@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>specforge</AssemblyName>
+    <RootNamespace>Specforge.Mcp</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Specforge.Core\Specforge.Core.csproj" />
+  </ItemGroup>
+
+</Project>

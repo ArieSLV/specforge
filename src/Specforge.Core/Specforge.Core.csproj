@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Specforge.Core</RootNamespace>
+    <AssemblyName>Specforge.Core</AssemblyName>
+  </PropertyGroup>
+
+</Project>

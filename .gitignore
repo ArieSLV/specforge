@@ -1,0 +1,26 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio / VS Code / Rider
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userprefs
+
+# JetBrains Rider
+*.DotSettings.user
+
+# OS metadata
+Thumbs.db
+.DS_Store
+
+# Publish output (DEC-001 publishes to D:\Work\specforge\bin\ — caught by bin/ above)
+
+# Coverage
+[Cc]overage/
+TestResults/
+*.coverage
+*.coveragexml
