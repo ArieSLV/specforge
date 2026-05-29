@@ -1,6 +1,7 @@
 using System.Text.Json;
 
 using Specforge.Core.Configuration;
+using Specforge.Core.Exceptions;
 
 using Xunit;
 
@@ -77,5 +78,22 @@ public class ConfigValidatorTests
         IReadOnlyList<ConfigValidationError> errors = ConfigValidator.Validate(doc.RootElement);
 
         Assert.Contains(errors, e => e.Pointer == "/packages/0/extraKinds/1");
+    }
+
+    [Fact]
+    public void ExtraKindsReserved_ThrowsAtLoadTime()
+    {
+        // ITEM-003 retrofit: a shape-valid but reserved kind ("DEC") is rejected at config-load time
+        // via ConfigValidator.EnforceReservedKinds (distinct from the shape-only Validate above).
+        const string json = """
+            {
+              "schemaVersion": 1, "shared": "s", "templates": "t",
+              "packages": [ { "name": "p", "path": "x", "extraKinds": ["DEC"] } ]
+            }
+            """;
+
+        SpecforgeReservedKindException ex = Assert.Throws<SpecforgeReservedKindException>(
+            () => ConfigLoader.ParseAndValidate(json, "/repo/.specforge.json"));
+        Assert.Equal("DEC", ex.Given);
     }
 }

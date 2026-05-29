@@ -1,0 +1,42 @@
+ITEM-003 evidence — IdParser.TryParse against DEC-004 "Reserved Kinds and Validation" examples
+==============================================================================================
+
+Source: DEC-004-ID-SCHEME-CUSTOMIZATION.md §"Related Tests / Validation" canonical sample set.
+Behavior verified by Specforge.Tests/Identifiers/IdParserTests.cs (114-test suite, all green).
+
+--- ACCEPTED (TryParse => true) ---
+  DEC-001                  => Atomic            { Kind=DEC,  Number=1 }
+  ITEM-001                 => Atomic            { Kind=ITEM, Number=1 }
+  ITEM-013                 => Atomic            { Kind=ITEM, Number=13 }
+  ABCDEF-999               => Atomic            { Kind=ABCDEF, Number=999 }   (6-letter kind, upper bound)
+  CMT-001                  => Atomic            { Kind=CMT,  Number=1 }
+  ART-DEC-001              => DescriptiveArt    { Slug=DEC-001 }              (mirroring ART form)
+  ART-WORK-PLAN            => DescriptiveArt    { Slug=WORK-PLAN }
+  ART-GLOSSARY             => DescriptiveArt    { Slug=GLOSSARY }
+  ART-LEDGER-COMMITS       => DescriptiveArt    { Slug=LEDGER-COMMITS }
+  REV-DEC-001-001          => CompositeReview   { Target=Atomic{DEC,1}, Sequence=1 }
+  REV-DEC-001-002          => CompositeReview   { Target=Atomic{DEC,1}, Sequence=2 }
+  specforge-mvp/DEC-001    => Qualified         { Package=specforge-mvp, Inner=Atomic{DEC,1} }
+
+--- REJECTED (TryParse => false) ---
+  DEC-1                    (number must be exactly 3 digits)
+  DEC-01                   (2 digits)
+  DEC-0001                 (4 digits)
+  dec-001                  (kind must be uppercase A-Z)
+  DEC-001-                 (trailing hyphen)
+  --DEC-001                (leading hyphens)
+  D-001                    (kind must be 2-6 letters)
+  ABCDEFG-001              (kind exceeds 6 letters)
+  pkg/sub/DEC-001          (package names never contain '/')
+  /DEC-001                 (empty package token)
+  (empty string)           (no input)
+
+--- DOGFOOD ---
+Every identifier kind present in this repo's ledger/*.md files (ART-DEC-001..008, ART-ITEM-001..013,
+ART-WORK-PLAN / ART-GLOSSARY / ART-LEDGER-* descriptive rows, CMT-001/002, REV-DEC-001-001, bare
+DEC-NNN / ITEM-NNN) parses successfully — asserted by IdParserTests.Dogfood_RepoIdentifiers_Parse.
+
+--- RETROFIT ---
+ConfigValidator.EnforceReservedKinds now rejects extraKinds:["DEC"] at config-load time with
+SpecforgeReservedKindException (code specforge.id.kind_reserved) — asserted by
+ConfigValidatorTests.ExtraKindsReserved_ThrowsAtLoadTime.

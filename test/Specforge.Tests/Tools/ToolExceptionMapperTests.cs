@@ -88,4 +88,34 @@ public class ToolExceptionMapperTests
         Assert.False(string.IsNullOrEmpty(error.GetProperty("data").GetProperty("correlationId").GetString()));
         Assert.False(string.IsNullOrEmpty(error.GetProperty("suggestion").GetString()));
     }
+
+    [Fact]
+    public void InvalidIdentifier_MapsGivenAndExpectedPatterns()
+    {
+        JsonElement error = Error(Mapper.Map(new SpecforgeInvalidIdentifierException("dec-001", ["^[A-Z]{2,6}-[0-9]{3}$"])));
+
+        Assert.Equal("specforge.id.invalid", error.GetProperty("code").GetString());
+        Assert.Equal("dec-001", error.GetProperty("data").GetProperty("given").GetString());
+        Assert.NotEmpty(error.GetProperty("data").GetProperty("expectedPatterns").EnumerateArray());
+    }
+
+    [Fact]
+    public void ReservedKind_MapsGivenAndReservedKinds()
+    {
+        JsonElement error = Error(Mapper.Map(new SpecforgeReservedKindException("DEC", ["DEC", "ITEM", "ART", "REV", "CMT"])));
+
+        Assert.Equal("specforge.id.kind_reserved", error.GetProperty("code").GetString());
+        Assert.Equal("DEC", error.GetProperty("data").GetProperty("given").GetString());
+        Assert.NotEmpty(error.GetProperty("data").GetProperty("reservedKinds").EnumerateArray());
+    }
+
+    [Fact]
+    public void KindExhausted_MapsKindAndPackage()
+    {
+        JsonElement error = Error(Mapper.Map(new SpecforgeKindExhaustedException("XYZ", "pkg")));
+
+        Assert.Equal("specforge.id.kind_exhausted", error.GetProperty("code").GetString());
+        Assert.Equal("XYZ", error.GetProperty("data").GetProperty("kind").GetString());
+        Assert.Equal("pkg", error.GetProperty("data").GetProperty("package").GetString());
+    }
 }

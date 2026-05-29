@@ -1,6 +1,8 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
+using Specforge.Core.Identifiers;
+
 namespace Specforge.Core.Configuration;
 
 /// <summary>
@@ -44,6 +46,20 @@ public static partial class ConfigValidator
         }
 
         return errors;
+    }
+
+    /// <summary>
+    /// DEC-004 reserved-kind enforcement (retrofit added by ITEM-003): rejects a package whose
+    /// <c>extraKinds</c> contains a core kind, throwing <see cref="Exceptions.SpecforgeReservedKindException"/>
+    /// at config-load time rather than waiting for a tool to use the kind.
+    /// </summary>
+    public static void EnforceReservedKinds(IReadOnlyList<SpecforgePackageConfig> packages)
+    {
+        ArgumentNullException.ThrowIfNull(packages);
+        foreach (SpecforgePackageConfig package in packages)
+        {
+            KindRegistry.ValidateExtraKinds(package.ExtraKinds);
+        }
     }
 
     private static void ValidatePackage(JsonElement pkg, string basePtr, List<ConfigValidationError> errors)

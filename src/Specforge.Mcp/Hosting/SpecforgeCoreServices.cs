@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Specforge.Core.Configuration;
 using Specforge.Core.Diagnostics;
+using Specforge.Core.Identifiers;
 
 namespace Specforge.Mcp.Hosting;
 
@@ -17,6 +18,12 @@ public static class SpecforgeCoreServices
         services.AddSingleton<ConfigLoader>();
         services.AddSingleton<SessionState>();
         services.AddSingleton<BinaryInfo>();
+
+        // ITEM-003 identifier services. KindRegistry is rebuilt per resolution from the live session
+        // (a new use_package selection swaps in a new registry).
+        services.AddSingleton<ILedgerReader, LedgerReader>();
+        services.AddSingleton<IIdAllocator, IdAllocator>();
+        services.AddTransient(sp => KindRegistry.FromSession(sp.GetRequiredService<SessionState>()));
         return services;
     }
 }

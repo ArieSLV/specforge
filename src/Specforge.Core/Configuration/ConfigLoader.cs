@@ -65,6 +65,7 @@ public sealed class ConfigLoader
             }
 
             SpecforgeConfig config = ConfigParser.Project(root, configPath);
+            ConfigValidator.EnforceReservedKinds(config.Packages); // DEC-004 reserved-kind check (ITEM-003 retrofit)
             return V1Migration.Apply(config);
         }
     }

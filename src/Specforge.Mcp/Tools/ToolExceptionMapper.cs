@@ -48,6 +48,24 @@ public sealed class ToolExceptionMapper(ILogger<ToolExceptionMapper> logger)
                     "call use_package with one of the listed names",
                     Data(new { requestedName = e.RequestedName, availablePackages = e.AvailablePackages.Select(ToPackageData) }));
 
+            case SpecforgeInvalidIdentifierException e:
+                return new McpErrorEnvelope(
+                    e.ErrorCode, e.Message,
+                    "correct the identifier to match one of the expected patterns",
+                    Data(new { given = e.Given, expectedPatterns = e.ExpectedPatterns }));
+
+            case SpecforgeReservedKindException e:
+                return new McpErrorEnvelope(
+                    e.ErrorCode, e.Message,
+                    "choose a non-reserved kind for extraKinds",
+                    Data(new { given = e.Given, reservedKinds = e.ReservedKinds }));
+
+            case SpecforgeKindExhaustedException e:
+                return new McpErrorEnvelope(
+                    e.ErrorCode, e.Message,
+                    "split the package or otherwise reorganize — 999 IDs of one kind reached",
+                    Data(new { kind = e.Kind, package = e.Package }));
+
             default:
                 string correlationId = Guid.NewGuid().ToString("n");
                 logger.LogError(exception, "Unhandled exception in tool invocation. correlationId={CorrelationId}", correlationId);
