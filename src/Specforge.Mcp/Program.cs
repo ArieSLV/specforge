@@ -9,6 +9,8 @@ using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 
 using Specforge.Core.Diagnostics;
+using Specforge.Core.Exceptions;
+using Specforge.Core.Skills;
 using Specforge.Mcp.Hosting;
 using Specforge.Mcp.Tools;
 
@@ -27,6 +29,20 @@ Dictionary<string, IMcpTool> tools = provider.GetServices<IMcpTool>().ToDictiona
 ToolExceptionMapper mapper = provider.GetRequiredService<ToolExceptionMapper>();
 BinaryInfo binaryInfo = provider.GetRequiredService<BinaryInfo>();
 ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+
+// ITEM-004 (DEC-005): validate the embedded skill catalog before the stdio loop accepts traffic.
+// A broken embedded SKILL.md fails the server start with a clear stderr log; an empty catalog is fine.
+ILogger startupLogger = loggerFactory.CreateLogger("Specforge.Mcp.Startup");
+try
+{
+    int skillCount = provider.GetRequiredService<SkillCatalogValidator>().Validate();
+    startupLogger.LogInformation("Embedded skill catalog validated: {SkillCount} skill(s).", skillCount);
+}
+catch (SpecforgeEmbeddedSkillNotFoundException ex)
+{
+    startupLogger.LogError(ex, "Embedded skill catalog validation failed for resource {ResourceName}.", ex.ResourceName);
+    return 1;
+}
 
 List<Tool> advertisedTools = [.. tools.Values.Select(t => new Tool { Name = t.Name, InputSchema = t.InputSchema })];
 

@@ -8,6 +8,16 @@
   <ItemGroup>
     <!-- DEC-003: Core depends only on BCL + Markdig + YamlDotNet + Logging.Abstractions. -->
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <!-- YamlDotNet: SKILL.md frontmatter parsing (ITEM-004, DEC-005). -->
+    <PackageReference Include="YamlDotNet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- DEC-005 build-time embedding: every file under spec/skills/** ships inside Specforge.Core.dll.
+         The .gitkeep directory anchor is excluded (and also filtered at enumeration time). -->
+    <EmbeddedResource Include="..\..\spec\skills\**\*.*" Exclude="..\..\spec\skills\**\.gitkeep">
+      <LogicalName>specforge.skills/%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

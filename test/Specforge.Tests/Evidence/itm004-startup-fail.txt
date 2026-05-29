@@ -1,0 +1,42 @@
+ITEM-004 evidence — embedded skill catalog startup validation
+==============================================================
+
+Binary:  D:\Work\specforge\bin\specforge.exe (self-contained win-x64)
+Cwd:     D:\Work\specforge
+Date:    2026-05-29
+
+The startup validator (DEC-005 / Program.cs) enumerates the embedded catalog before the MCP stdio
+loop accepts traffic. An empty catalog is valid; a broken SKILL.md fails the server start.
+
+=== CASE 1: empty catalog (production state — spec/skills/ holds only .gitkeep) ===
+stderr:
+  info: Specforge.Mcp.Startup[0]
+        Embedded skill catalog validated: 0 skill(s).
+  info: ModelContextProtocol.Server.StdioServerTransport[...]
+        Server (stream) (specforge) transport reading messages.
+initialize + tools/call info exchange succeeds; info returns activePackage=specforge-mvp.
+=> PASS: empty catalog is a no-op; the host comes up normally.
+
+=== CASE 2: deliberately broken skill embedded (negative test; NOT committed) ===
+A temporary spec/skills/broken-startup-test/SKILL.md (missing the required `description` key) was
+embedded via the production glob and the binary clean-rebuilt + republished, then launched:
+
+  ExitCode: 1
+  stderr:
+    fail: Specforge.Mcp.Startup[0]
+          Embedded skill catalog validation failed for resource specforge.skills/broken-startup-test/SKILL.md.
+          Specforge.Core.Exceptions.SpecforgeEmbeddedSkillNotFoundException: SKILL.md frontmatter is missing required key 'description'.
+             at Specforge.Core.Skills.SkillFrontmatterParser.RequireString(...)
+             at Specforge.Core.Skills.SkillFrontmatterParser.Parse(...)
+             at Specforge.Core.Skills.EmbeddedSkillCatalog.GetSkills()
+             at Specforge.Core.Skills.SkillCatalogValidator.Validate()
+             at Program.<Main>$(...)
+
+=> PASS: the server refuses to start (exit code 1), logs the error to stderr at Error level, and
+   never opens the stdio loop. The broken-skill directory was then removed and the binary republished
+   to the clean (empty-catalog) state.
+
+NOTE (bug found + fixed during this evidence run): MSBuild's %(RecursiveDir) emits a backslash on
+Windows, so production logical names are "specforge.skills/<dir>\SKILL.md". EmbeddedSkillCatalog now
+normalizes '\' -> '/' before structural parsing (keeping the original name for stream access).
+Guarded by EmbeddedSkillCatalogTests.BackslashLogicalName_IsNormalized.

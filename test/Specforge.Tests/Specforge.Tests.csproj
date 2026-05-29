@@ -27,4 +27,24 @@
     <ProjectReference Include="..\..\src\Specforge.Mcp\Specforge.Mcp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- ITEM-004 skill-catalog test fixtures. Embedded under distinct test.skills.* prefixes so each
+         scenario (valid / broken / name-mismatch) can be enumerated in isolation; never collides with
+         the production specforge.skills/ prefix. -->
+    <EmbeddedResource Include="SkillFixtures\valid-skill\SKILL.md">
+      <LogicalName>test.skills.valid/valid-skill/SKILL.md</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SkillFixtures\broken-skill\SKILL.md">
+      <LogicalName>test.skills.broken/broken-skill/SKILL.md</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SkillFixtures\name-mismatch\SKILL.md">
+      <LogicalName>test.skills.mismatch/name-mismatch/SKILL.md</LogicalName>
+    </EmbeddedResource>
+    <!-- Backslash in the logical name mimics MSBuild %(RecursiveDir) on Windows; the catalog must
+         normalize it. Distinct physical file (NETSDK1022 forbids embedding one file twice). -->
+    <EmbeddedResource Include="SkillFixtures\winpath\SKILL.md">
+      <LogicalName>test.skills.winpath/winpath\SKILL.md</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Specforge.Core.Configuration;
 using Specforge.Core.Diagnostics;
 using Specforge.Core.Identifiers;
+using Specforge.Core.Skills;
 
 namespace Specforge.Mcp.Hosting;
 
@@ -24,6 +25,10 @@ public static class SpecforgeCoreServices
         services.AddSingleton<ILedgerReader, LedgerReader>();
         services.AddSingleton<IIdAllocator, IdAllocator>();
         services.AddTransient(sp => KindRegistry.FromSession(sp.GetRequiredService<SessionState>()));
+
+        // ITEM-004 embedded skill catalog (DEC-005): enumerated from the Core assembly's manifest resources.
+        services.AddSingleton<IEmbeddedSkillCatalog>(_ => new EmbeddedSkillCatalog(typeof(SpecforgeConfig).Assembly));
+        services.AddSingleton<SkillCatalogValidator>();
         return services;
     }
 }

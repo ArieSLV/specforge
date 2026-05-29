@@ -48,6 +48,12 @@ public sealed class ToolExceptionMapper(ILogger<ToolExceptionMapper> logger)
                     "call use_package with one of the listed names",
                     Data(new { requestedName = e.RequestedName, availablePackages = e.AvailablePackages.Select(ToPackageData) }));
 
+            case SpecforgeEmbeddedSkillNotFoundException e:
+                return new McpErrorEnvelope(
+                    e.ErrorCode, e.Message,
+                    "rebuild specforge — the binary is missing embedded skill resources",
+                    Data(new { resourceName = e.ResourceName }));
+
             case SpecforgeInvalidIdentifierException e:
                 return new McpErrorEnvelope(
                     e.ErrorCode, e.Message,

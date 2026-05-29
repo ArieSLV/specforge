@@ -118,4 +118,13 @@ public class ToolExceptionMapperTests
         Assert.Equal("XYZ", error.GetProperty("data").GetProperty("kind").GetString());
         Assert.Equal("pkg", error.GetProperty("data").GetProperty("package").GetString());
     }
+
+    [Fact]
+    public void EmbeddedSkillNotFound_MapsResourceName()
+    {
+        JsonElement error = Error(Mapper.Map(new SpecforgeEmbeddedSkillNotFoundException("specforge.skills/x/SKILL.md", "broken catalog")));
+
+        Assert.Equal("specforge.skills.catalog_missing", error.GetProperty("code").GetString());
+        Assert.Equal("specforge.skills/x/SKILL.md", error.GetProperty("data").GetProperty("resourceName").GetString());
+    }
 }
