@@ -22,6 +22,7 @@ services.AddSingleton<ToolExceptionMapper>();
 services.AddSingleton<IMcpTool, ListPackagesTool>();
 services.AddSingleton<IMcpTool, UsePackageTool>();
 services.AddSingleton<IMcpTool, InfoTool>();
+services.AddSingleton<IMcpTool, InstallSkillsTool>();
 
 await using ServiceProvider provider = services.BuildServiceProvider();
 

@@ -1,0 +1,26 @@
+ITEM-005 evidence — install_skills dryRun against the published binary (empty catalog)
+=======================================================================================
+
+Binary: D:\Work\specforge\bin\specforge.exe (self-contained win-x64)
+Cwd:    D:\Work\specforge
+Date:   2026-05-29
+
+--- SENT (stdin) ---
+{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"itm005","version":"0"}}}
+{"jsonrpc":"2.0","method":"notifications/initialized"}
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"install_skills","arguments":{"agent":"all","dryRun":true}}}
+
+--- RECEIVED (id:2, decoded content[0].text) ---
+{
+  "agents": {
+    "claude-code": { "writtenCount": 0, "writtenPaths": [], "overwrittenPaths": [] },
+    "codex":       { "writtenCount": 0, "writtenPaths": [], "overwrittenPaths": [] }
+  },
+  "binaryVersion": "1.0.0+85cabef30b82cd60645d55d7ea1f47ce4503b736"
+}
+
+--- VERIFICATION ---
+[PASS] install_skills is registered (4th MCP tool) and reachable over stdio.
+[PASS] Empty catalog (spec/skills holds only .gitkeep) -> zero counts for both agents.
+[PASS] dryRun: no filesystem writes (both agents report empty writtenPaths); binaryVersion populated.
+[PASS] Per-agent result shape matches DEC-005 (writtenCount / writtenPaths / overwrittenPaths).

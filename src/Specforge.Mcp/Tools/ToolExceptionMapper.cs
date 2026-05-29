@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 
 using Specforge.Core.Configuration;
 using Specforge.Core.Exceptions;
+using Specforge.Core.Skills;
 
 namespace Specforge.Mcp.Tools;
 
@@ -53,6 +54,19 @@ public sealed class ToolExceptionMapper(ILogger<ToolExceptionMapper> logger)
                     e.ErrorCode, e.Message,
                     "rebuild specforge — the binary is missing embedded skill resources",
                     Data(new { resourceName = e.ResourceName }));
+
+            case SpecforgeSkillInstallException e:
+                return new McpErrorEnvelope(
+                    e.ErrorCode, e.Message,
+                    "check filesystem permissions on the target directory",
+                    Data(new
+                    {
+                        agent = e.Agent,
+                        path = e.Path,
+                        innerType = e.InnerExceptionType.Name,
+                        innerMessage = e.InnerMessage,
+                        partialResult = InstallSkillsTool.ToPayload(e.PartialResult),
+                    }));
 
             case SpecforgeInvalidIdentifierException e:
                 return new McpErrorEnvelope(

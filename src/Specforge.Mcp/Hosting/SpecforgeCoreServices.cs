@@ -29,6 +29,10 @@ public static class SpecforgeCoreServices
         // ITEM-004 embedded skill catalog (DEC-005): enumerated from the Core assembly's manifest resources.
         services.AddSingleton<IEmbeddedSkillCatalog>(_ => new EmbeddedSkillCatalog(typeof(SpecforgeConfig).Assembly));
         services.AddSingleton<SkillCatalogValidator>();
+
+        // ITEM-005 skill installer (DEC-005): writes the catalog to user-wide agent directories.
+        services.AddSingleton<ISkillInstallTargetResolver, SkillInstallTargetResolver>();
+        services.AddSingleton<ISkillInstaller, SkillInstaller>();
         return services;
     }
 }

@@ -1,0 +1,43 @@
+ITEM-005 evidence — partial-failure envelope (one agent unwritable)
+===================================================================
+
+Scenario (Specforge.Tests/Skills/PartialFailureTests.cs): a test-only ISkillInstallTargetResolver
+returns a writable temp dir for ClaudeCode and an UNWRITABLE path for Codex (a path located under an
+existing file, so Directory.CreateDirectory throws IOException). The installer processes ClaudeCode
+first (succeeds, no rollback), then Codex fails.
+
+InstallAsync(All) throws SpecforgeSkillInstallException with:
+  Agent              = "codex"
+  Path               = <codex target path that failed>
+  InnerExceptionType = System.IO.IOException
+  PartialResult.Agents["claude-code"].WrittenCount = 1   (its SKILL.md write survived)
+  PartialResult.Agents["codex"].WrittenCount       = 0   (aborted before writing)
+
+ToolExceptionMapper projects it to the failure envelope (verified by
+ToolExceptionMapperTests.SkillInstall_MapsAgentPathAndPartialResult):
+
+{
+  "error": {
+    "code": "specforge.skills.install_failed",
+    "message": "Skill install failed for agent 'codex' at '<path>': <io message>",
+    "suggestion": "check filesystem permissions on the target directory",
+    "data": {
+      "agent": "codex",
+      "path": "<failing target path>",
+      "innerType": "IOException",
+      "innerMessage": "<io message>",
+      "partialResult": {
+        "agents": {
+          "claude-code": { "writtenCount": 1, "writtenPaths": ["..."], "overwrittenPaths": [] }
+        },
+        "binaryVersion": "1.0.0+<sha>"
+      }
+    }
+  }
+}
+
+--- VERIFICATION ---
+[PASS] Per DEC-005, the successful agent's writes are NOT rolled back; the failure envelope reports
+       both the successful agent's state and the failing agent's pre-error progress.
+[PASS] suggestion + data shape match DEC-007's specforge.skills.install_failed catalog row, with the
+       partialResult payload carried inside data.

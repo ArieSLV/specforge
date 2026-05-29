@@ -78,13 +78,16 @@ public sealed partial class EmbeddedSkillCatalog(Assembly assembly, string resou
                     $"Skill name '{frontmatter.Name}' is not kebab-case (^[a-z][a-z0-9-]*[a-z0-9]$).");
             }
 
+            string skillResource = skillEntry.Resource;
+            EmbeddedSkillFile skillMarkdown = new(skillLogicalName, () => OpenResource(skillResource));
+
             List<EmbeddedSkillFile> files = entries
                 .Where(e => !string.Equals(e.RelativeFile, "SKILL.md", StringComparison.Ordinal))
                 .OrderBy(e => e.RelativeFile, StringComparer.Ordinal)
                 .Select(e => new EmbeddedSkillFile($"{resourcePrefix}{directory}/{e.RelativeFile}", () => OpenResource(e.Resource)))
                 .ToList();
 
-            skills.Add(new EmbeddedSkill(frontmatter.Name, frontmatter.Description, frontmatter.Extras, files));
+            skills.Add(new EmbeddedSkill(frontmatter.Name, frontmatter.Description, frontmatter.Extras, skillMarkdown, files));
         }
 
         return [.. skills.OrderBy(s => s.Name, StringComparer.Ordinal)];

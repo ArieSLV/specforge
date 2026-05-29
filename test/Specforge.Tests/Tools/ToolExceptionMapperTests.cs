@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 using Specforge.Core.Configuration;
 using Specforge.Core.Exceptions;
+using Specforge.Core.Skills;
 using Specforge.Mcp.Tools;
 
 using Xunit;
@@ -126,5 +127,22 @@ public class ToolExceptionMapperTests
 
         Assert.Equal("specforge.skills.catalog_missing", error.GetProperty("code").GetString());
         Assert.Equal("specforge.skills/x/SKILL.md", error.GetProperty("data").GetProperty("resourceName").GetString());
+    }
+
+    [Fact]
+    public void SkillInstall_MapsAgentPathAndPartialResult()
+    {
+        SkillInstallResult partial = new(
+            new Dictionary<string, SkillInstallAgentResult> { ["claude-code"] = new(1, ["/p/a"], []) },
+            "1.0.0");
+        SpecforgeSkillInstallException ex = new("codex", "/p/x", typeof(IOException), "denied", partial);
+
+        JsonElement error = Error(Mapper.Map(ex));
+
+        Assert.Equal("specforge.skills.install_failed", error.GetProperty("code").GetString());
+        JsonElement data = error.GetProperty("data");
+        Assert.Equal("codex", data.GetProperty("agent").GetString());
+        Assert.Equal("IOException", data.GetProperty("innerType").GetString());
+        Assert.Equal(1, data.GetProperty("partialResult").GetProperty("agents").GetProperty("claude-code").GetProperty("writtenCount").GetInt32());
     }
 }
