@@ -68,6 +68,12 @@ public sealed class ToolExceptionMapper(ILogger<ToolExceptionMapper> logger)
                         partialResult = InstallSkillsTool.ToPayload(e.PartialResult),
                     }));
 
+            case SpecforgeDeleteForbiddenException e:
+                return new McpErrorEnvelope(
+                    e.ErrorCode, e.Message,
+                    "transition the artifact to Withdrawn via set_*_status instead, or supersede with a new artifact",
+                    Data(new { id = e.Id, currentStatus = e.CurrentStatus, allowedStates = e.AllowedStates }));
+
             case SpecforgeInvalidArgumentException e:
                 return new McpErrorEnvelope(
                     e.ErrorCode, e.Message, e.Suggestion,

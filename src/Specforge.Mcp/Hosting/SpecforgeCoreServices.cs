@@ -2,8 +2,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Specforge.Core.Configuration;
 using Specforge.Core.Diagnostics;
+using Specforge.Core.Documents;
 using Specforge.Core.Identifiers;
 using Specforge.Core.Init;
+using Specforge.Core.Ledger;
+using Specforge.Core.Lifecycle;
 using Specforge.Core.Skills;
 
 namespace Specforge.Mcp.Hosting;
@@ -43,6 +46,14 @@ public static class SpecforgeCoreServices
         services.AddSingleton<CodexOpenaiYamlWriter>();
         services.AddSingleton<ScaffoldEngine>();
         services.AddSingleton<IInitService, InitService>();
+
+        // ITEM-007 ledger primitives + lifecycle + decision service (first spec-graph tools).
+        services.AddSingleton<IArtifactLedgerService, ArtifactLedgerService>();
+        services.AddSingleton<IHistoryLedgerService, HistoryLedgerService>();
+        services.AddSingleton<IReviewLedgerService, ReviewLedgerService>();
+        services.AddSingleton<LifecycleStateMachine>();
+        services.AddSingleton<DecisionFileWriter>();
+        services.AddSingleton<DecisionService>();
         return services;
     }
 }

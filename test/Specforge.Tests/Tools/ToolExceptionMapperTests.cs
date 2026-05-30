@@ -155,4 +155,15 @@ public class ToolExceptionMapperTests
         Assert.Equal("CLAUDE.md", error.GetProperty("data").GetProperty("argument").GetString());
         Assert.Contains("balanced", error.GetProperty("data").GetProperty("expected").GetString()!, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void DeleteForbidden_MapsStatusAndAllowedStates()
+    {
+        JsonElement error = Error(Mapper.Map(new SpecforgeDeleteForbiddenException("DEC-001", "Approved", ["Not started", "Placeholder", "Draft", "Draft for user review"])));
+
+        Assert.Equal("specforge.lifecycle.delete_forbidden", error.GetProperty("code").GetString());
+        Assert.Equal("DEC-001", error.GetProperty("data").GetProperty("id").GetString());
+        Assert.Equal("Approved", error.GetProperty("data").GetProperty("currentStatus").GetString());
+        Assert.NotEmpty(error.GetProperty("data").GetProperty("allowedStates").EnumerateArray());
+    }
 }

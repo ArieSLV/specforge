@@ -10,6 +10,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <!-- YamlDotNet: SKILL.md frontmatter parsing (ITEM-004, DEC-005). -->
     <PackageReference Include="YamlDotNet" />
+    <!-- Markdig: decision/item document section parsing (ITEM-007, DEC-003). -->
+    <PackageReference Include="Markdig" />
   </ItemGroup>
 
   <ItemGroup>

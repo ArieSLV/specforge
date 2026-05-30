@@ -34,4 +34,35 @@ public abstract class SpecforgeToolBase(ConfigLoader loader, SessionState sessio
 
         return session.Config!;
     }
+
+    /// <summary>Reads a non-empty string argument; returns false (and empty) if absent or not a string.</summary>
+    protected static bool TryGetString(JsonElement args, string name, out string value)
+    {
+        if (args.ValueKind == JsonValueKind.Object
+            && args.TryGetProperty(name, out JsonElement element)
+            && element.ValueKind == JsonValueKind.String
+            && !string.IsNullOrWhiteSpace(element.GetString()))
+        {
+            value = element.GetString()!;
+            return true;
+        }
+
+        value = string.Empty;
+        return false;
+    }
+
+    /// <summary>Reads an optional string argument, or <see langword="null"/> if absent.</summary>
+    protected static string? GetOptionalString(JsonElement args, string name) =>
+        TryGetString(args, name, out string value) ? value : null;
+
+    /// <summary>Reads a boolean argument; true only when present and JSON <c>true</c>.</summary>
+    protected static bool GetBool(JsonElement args, string name) =>
+        args.ValueKind == JsonValueKind.Object && args.TryGetProperty(name, out JsonElement element) && element.ValueKind == JsonValueKind.True;
+
+    /// <summary>Builds a <c>specforge.tool.invalid_argument</c> failure result.</summary>
+    protected static ToolResult InvalidArgument(string argument, string expected) => ToolResult.Fail(new McpErrorEnvelope(
+        "specforge.tool.invalid_argument",
+        $"argument '{argument}' is invalid; expected {expected}.",
+        "correct the argument value",
+        JsonSerializer.SerializeToElement(new { argument, expected })));
 }

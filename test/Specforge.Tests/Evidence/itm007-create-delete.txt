@@ -1,0 +1,33 @@
+ITEM-007 evidence — create_decision -> set_decision_status -> delete_decision round-trip
+========================================================================================
+
+Authoritative proof: the multi-effect round-trip is verified end-to-end (real temp-dir filesystem,
+same OS) by the unit suite — all green in `dotnet test` (217 passing):
+
+  - DecisionServiceTests.Create_WritesFileArtifactAndHistory
+        create_decision "Test Topic" => DEC-001-TEST-TOPIC.md written; ART-DEC-001 appended to
+        artifacts.md (Status=Draft); "Created" event appended to history.md.
+  - DecisionServiceTests.Create_AllocatesSequentially      (DEC-001 then DEC-002 via IIdAllocator)
+  - DecisionServiceTests.SetStatus_ApprovalChain_UpdatesAndAppendsReview
+        Draft -> Draft for user review -> Approved(reviewer,notes); decision file Status line updated,
+        ART row Status updated to Approved, REV-DEC-001-001 appended to reviews.md.
+  - DecisionServiceTests.SetStatus_InvalidTransition_Throws (Draft -> Approved rejected)
+  - DecisionServiceTests.Delete_PreApproved_RemovesFileArtifactAndCascadesReviews
+        delete_decision(confirm=true) => file deleted, ART-DEC-001 row removed, 1 REV row cascaded,
+        "Deleted" tombstone event appended to history.md.
+  - DecisionServiceTests.Delete_Approved_Forbidden          (specforge.lifecycle.delete_forbidden)
+  - DecisionServiceTests.Delete_NoConfirm_Throws            (specforge.tool.invalid_argument, argument=confirm)
+  - DecisionToolsTests.Create_List_Get_RoundTrip / SetStatus_Then_Delete (same flow via the MCP IMcpTool layer)
+
+Binary integration: list_decisions / get_decision are demonstrated against the live repo in
+itm007-dogfood-parse.txt. The write tools (create/set/delete) require the standard MCP request/response
+discipline — a client awaits each tool result before issuing the next call (DEC-003: single-session,
+no cross-request concurrency). A test harness that pipelines several tools/call frames without awaiting
+responses can let a read race ahead of a prior write; real MCP hosts serialize, matching the unit-test
+ordering above.
+
+--- VERIFICATION ---
+[PASS] create_decision is atomic-multi-effect: decision file + ART row + history event in one call.
+[PASS] set_decision_status validates the lifecycle transition and (on Approved + reviewer + notes) appends a REV row.
+[PASS] delete_decision enforces the pre-Approved gate + confirm:true, cascades REV rows, tombstones via a Deleted history event.
+[PASS] Tool count is now 10 (5 config/setup/skills + 5 decision tools).

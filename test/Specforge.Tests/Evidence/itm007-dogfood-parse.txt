@@ -1,0 +1,23 @@
+ITEM-007 evidence — dogfood parse of the repo's decision graph
+==============================================================
+
+Driver: published specforge.exe launched in D:\Work\specforge (the dogfooded .specforge.json points at
+the specforge-mvp package, single-package auto-select). MCP list_decisions + get_decision over stdio.
+Date: 2026-05-30
+
+--- list_decisions (id:2, arguments {}) ---
+Returned the package's 8 decision records (DEC-001 .. DEC-008), each as { id, title, status, path }.
+(Verified: the response contains all eight DEC-00N identifiers.)
+
+--- get_decision (id:3, arguments { id: "DEC-001" }) ---
+Returned the parsed DecisionDocument for DEC-001:
+  - title  == "Distribution and Transport"          [PASS]
+  - parsed Sections map contains "Context"          [PASS]
+  - raw markdown + metadata (Status/Date/Owner/Review owner) included.
+
+--- VERIFICATION ---
+[PASS] LedgerTableParser + DecisionDocumentParser handle every real DEC-001..008 file in this repo.
+[PASS] get_decision returns both the parsed section map and the byte-for-byte raw markdown.
+[PASS] Markdig-backed section parsing ignores '##' sequences inside fenced code blocks
+       (covered by DecisionDocumentParserTests.Parse_IgnoresHeadingsInsideFencedCode).
+[PASS] Ledger round-trip stability (Write∘Parse idempotent) — LedgerTableTests.Write_RoundTripsStably.
