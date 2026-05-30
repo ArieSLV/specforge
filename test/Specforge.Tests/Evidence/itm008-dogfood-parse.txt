@@ -1,0 +1,18 @@
+ITEM-008 evidence — dogfood parse of the repo's item graph
+==========================================================
+
+Driver: published specforge.exe in D:\Work\specforge (specforge-mvp package). Serial MCP
+request/response over stdio. Date: 2026-05-30
+
+--- list_items (id:2, {}) ---
+Returned 13 distinct item ids (ITEM-001 .. ITEM-013), each { id, title, status, path }.
+
+--- get_item (id:3, { id: "ITEM-001" }) ---
+title == "Solution Bootstrap"; parsed header (Status / Review owner / Depends on / Updates ledger rows),
+section map, and missingRequiredSections were returned alongside the raw markdown.
+
+--- VERIFICATION ---
+[PASS] ItemDocumentParser handles every real ITEM-001..013 file in this repo.
+[PASS] get_item returns the parsed section map + missingRequiredSections + raw markdown.
+[PASS] DependsOn / UpdatesLedgerRows header lines are parsed into lists.
+[PASS] RequiredItemSectionsContractTests confirms the in-code required-section list matches spec_item_contract.md.

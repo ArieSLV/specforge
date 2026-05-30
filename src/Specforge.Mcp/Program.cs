@@ -14,6 +14,7 @@ using Specforge.Core.Skills;
 using Specforge.Mcp.Hosting;
 using Specforge.Mcp.Tools;
 using Specforge.Mcp.Tools.Decisions;
+using Specforge.Mcp.Tools.Items;
 
 ServiceCollection services = new();
 services.AddSpecforgeStderrLogging();
@@ -30,6 +31,11 @@ services.AddSingleton<IMcpTool, GetDecisionTool>();
 services.AddSingleton<IMcpTool, CreateDecisionTool>();
 services.AddSingleton<IMcpTool, SetDecisionStatusTool>();
 services.AddSingleton<IMcpTool, DeleteDecisionTool>();
+services.AddSingleton<IMcpTool, ListItemsTool>();
+services.AddSingleton<IMcpTool, GetItemTool>();
+services.AddSingleton<IMcpTool, CreateItemTool>();
+services.AddSingleton<IMcpTool, SetItemStatusTool>();
+services.AddSingleton<IMcpTool, DeleteItemTool>();
 
 await using ServiceProvider provider = services.BuildServiceProvider();
 

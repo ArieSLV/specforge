@@ -53,6 +53,8 @@ public sealed partial class IdAllocator(ILedgerReader ledgerReader, SessionState
     {
         "CMT" => ("commits.md", CommitNumber()),
         "REV" => ("reviews.md", ReviewSequence()),
+        // ART-ITEM-* mirroring rows live in items.md (ITEM-008 routing); everything else in artifacts.md.
+        "ITEM" => ("items.md", MirrorNumber("ITEM")),
         _ => ("artifacts.md", MirrorNumber(kind)),
     };
 

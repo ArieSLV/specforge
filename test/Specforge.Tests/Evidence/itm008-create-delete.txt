@@ -1,0 +1,35 @@
+ITEM-008 evidence — create_item -> set_item_status -> list -> delete_item round-trip (binary)
+=============================================================================================
+
+Driver: published specforge.exe in a fresh temp project (init scaffold=true first), then a SERIAL MCP
+session (each tool result awaited before the next call). Date: 2026-05-30
+
+--- create_item { title: "Sample Item", dependsOn: ["DEC-001"] } ---
+{ "id":"ITEM-001", "slug":"SAMPLE-ITEM", "itemPath":".../spec/packages/demo/items/ITEM-001-SAMPLE-ITEM.md",
+  "artifactId":"ART-ITEM-001", "dryRun":false,
+  "plannedWrites":[ "...items/ITEM-001-SAMPLE-ITEM.md", "...ledger/items.md (+ART-ITEM-001)", "...ledger/history.md (+Created)" ] }
+=> dependsOn validated; ART-ITEM-001 routed to ledger/items.md (NOT artifacts.md).
+
+--- set_item_status { id: "ITEM-001", status: "Draft for user review" } ---
+{ "id":"ITEM-001", "previousStatus":"Draft", "newStatus":"Draft for user review", "reviewId":null, "dryRun":false }
+
+--- list_items {} ---
+{ "items":[ { "id":"ITEM-001", "title":"Sample Item", "status":"Draft for user review", "path":"...ITEM-001-SAMPLE-ITEM.md" } ] }
+=> a read issued AFTER the create+set writes sees the item correctly (serial request/response).
+
+--- delete_item { id: "ITEM-001", confirm: true } ---
+{ "id":"ITEM-001", "itemPath":"...ITEM-001-SAMPLE-ITEM.md", "artifactId":"ART-ITEM-001", "removedReviewRows":0, "dryRun":false }
+=> after delete, ledger/items.md no longer contains ART-ITEM-001.
+
+--- ledger/history.md tail (all three events recorded against ART-ITEM-001) ---
+| 2026-05-30 | `ART-ITEM-001` | Created               | create_item: Sample Item |
+| 2026-05-30 | `ART-ITEM-001` | Draft for user review | set_item_status -> Draft for user review |
+| 2026-05-30 | `ART-ITEM-001` | Deleted               | delete_item: tombstoned ITEM-001; removed 0 review row(s); number not reused |
+
+--- VERIFICATION ---
+[PASS] create_item is atomic-multi-effect: item file + ART-ITEM-001 row in items.md + Created history event.
+[PASS] ART-ITEM-* rows route to ledger/items.md (ITEM-008 routing).
+[PASS] set_item_status applies the validated lifecycle transition + history event.
+[PASS] delete_item removes file + ART row + appends a Deleted tombstone event; number not reused.
+[PASS] Tool count is now 15 (10 prior + 5 item tools).
+Note: drive write tools one request->response at a time (real MCP clients serialize; DEC-003 single-session).

@@ -54,6 +54,10 @@ public static class SpecforgeCoreServices
         services.AddSingleton<LifecycleStateMachine>();
         services.AddSingleton<DecisionFileWriter>();
         services.AddSingleton<DecisionService>();
+
+        // ITEM-008 item-side document layer (reuses the ledger/lifecycle infra above).
+        services.AddSingleton<ItemFileWriter>();
+        services.AddSingleton<ItemService>();
         return services;
     }
 }

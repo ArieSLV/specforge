@@ -42,7 +42,7 @@ public class IdAllocatorTests
     [Fact]
     public async Task NextNumber_Item_ReturnsHighestPlusOne()
     {
-        IdAllocator allocator = Allocator(("artifacts.md", ["ART-ITEM-001"]));
+        IdAllocator allocator = Allocator(("items.md", ["ART-ITEM-001"]));
         Assert.Equal(2, await allocator.NextNumberAsync("ITEM", "pkg", CancellationToken.None));
     }
 
