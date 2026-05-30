@@ -72,7 +72,7 @@ public class DeleteReviewToolTests
         Assert.DoesNotContain("REV-ITEM-007-001", await ws.ReadLedgerAsync("reviews.md"), StringComparison.Ordinal);
         string history = await ws.ReadLedgerAsync("history.md");
         Assert.Contains("Deleted", history, StringComparison.Ordinal);
-        Assert.Contains("tombstoned by delete_review", history, StringComparison.Ordinal);
+        Assert.Contains("Tombstone REV-ITEM-007-001:", history, StringComparison.Ordinal);
     }
 
     [Fact]

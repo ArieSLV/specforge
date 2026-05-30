@@ -1,0 +1,26 @@
+ITEM-010 evidence - validate(aspect=all) against a deliberately-seeded sad-path fixture
+=======================================================================================
+
+Driver: D:\Work\specforge\bin\specforge.exe over a SERIAL MCP stdio session against a fresh temp
+project hand-seeded with one defect per finding category. Date: 2026-05-30
+
+Seed:
+  ids:             ART-DEC-001 + ART-DEC-003 (gap at DEC-002, no tombstone)
+  links:           reviews.md REV-DEC-099-001 targets non-existent DEC-099
+  lifecycle:       decisions/DEC-001-X.md Status=Draft but ledger ART-DEC-001=Approved (mismatch)
+  impact-coverage: items/ITEM-001-X.md is Approved but omits the 'Done Criteria' required section
+
+--- validate { aspect: "all" } ---
+aspect=all  errorCount=4  warningCount=1  infoCount=0
+message: 4 error(s), 1 warning(s), 0 info
+  [error] ids DEC-002: sequence gap: 'DEC-002' is missing with no tombstone in history.md (numbers are never reused, so a gap must be explained by a Deleted event).
+  [error] links REV-DEC-099-001: review row REV-DEC-099-001 targets 'DEC-099' which does not exist.
+  [error] lifecycle DEC-001: status mismatch for DEC-001: the file says 'Draft' but ledger row ART-DEC-001 says 'Approved'.
+  [warning] lifecycle ITEM-001: ITEM-001 is Approved but has no review (REV) row.
+  [error] impact-coverage ITEM-001: Approved item ITEM-001 is missing required section(s): Done Criteria.
+
+--- VERIFICATION ---
+[PASS] Each seeded defect surfaces as a finding under its own aspect (ids / links / lifecycle / impact-coverage).
+[PASS] aspect=all ran every aspect with no short-circuit (all four categories represented).
+[PASS] Severity split honored: ids gap / dangling REV target / status mismatch / Approved-missing-section are errors.
+[PASS] The envelope is SUCCESS despite the errors (findings-as-data).

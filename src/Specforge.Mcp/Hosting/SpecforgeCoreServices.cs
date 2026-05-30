@@ -8,6 +8,7 @@ using Specforge.Core.Init;
 using Specforge.Core.Ledger;
 using Specforge.Core.Lifecycle;
 using Specforge.Core.Skills;
+using Specforge.Core.Validation;
 
 namespace Specforge.Mcp.Hosting;
 
@@ -59,6 +60,14 @@ public static class SpecforgeCoreServices
         // ITEM-008 item-side document layer (reuses the ledger/lifecycle infra above).
         services.AddSingleton<ItemFileWriter>();
         services.AddSingleton<ItemService>();
+
+        // ITEM-010 validation layer: tombstone-aware allocator decorator + 4 aspect validators + orchestrator.
+        services.AddSingleton(sp => new TombstoneAwareIdAllocator(sp.GetRequiredService<IIdAllocator>(), sp.GetRequiredService<SessionState>()));
+        services.AddSingleton<IIdsAspectValidator, IdsAspectValidator>();
+        services.AddSingleton<ILinksAspectValidator, LinksAspectValidator>();
+        services.AddSingleton<ILifecycleAspectValidator, LifecycleAspectValidator>();
+        services.AddSingleton<IImpactCoverageAspectValidator, ImpactCoverageAspectValidator>();
+        services.AddSingleton<IValidationService, ValidationService>();
         return services;
     }
 }

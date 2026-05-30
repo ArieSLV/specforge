@@ -3,6 +3,7 @@ using System.Text.Json;
 using Specforge.Core.Configuration;
 using Specforge.Core.Identifiers;
 using Specforge.Core.Ledger;
+using Specforge.Core.Validation;
 using Specforge.Mcp.Hosting;
 
 namespace Specforge.Mcp.Tools.Ledger;
@@ -71,7 +72,7 @@ public sealed class DeleteReviewTool(
         if (!dryRun)
         {
             await reviews.RemoveAsync(id, ct).ConfigureAwait(false);
-            await history.AppendAsync(artifactTarget, "Deleted", $"{id} tombstoned by delete_review", ct).ConfigureAwait(false);
+            await history.AppendAsync(artifactTarget, "Deleted", TombstoneDetailFormat.Format(id, "deleted via delete_review"), ct).ConfigureAwait(false);
         }
 
         return ToolResult.Ok(new

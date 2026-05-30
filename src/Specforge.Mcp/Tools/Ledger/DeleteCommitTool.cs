@@ -3,6 +3,7 @@ using System.Text.Json;
 using Specforge.Core.Configuration;
 using Specforge.Core.Identifiers;
 using Specforge.Core.Ledger;
+using Specforge.Core.Validation;
 using Specforge.Mcp.Hosting;
 
 namespace Specforge.Mcp.Tools.Ledger;
@@ -66,7 +67,7 @@ public sealed class DeleteCommitTool(
         if (!dryRun)
         {
             await commits.RemoveAsync(id, ct).ConfigureAwait(false);
-            await history.AppendAsync(row.Linked, "Deleted", $"{id} (was {row.CommitSha}) tombstoned by delete_commit", ct).ConfigureAwait(false);
+            await history.AppendAsync(row.Linked, "Deleted", TombstoneDetailFormat.Format(id, $"was {row.CommitSha}; deleted via delete_commit"), ct).ConfigureAwait(false);
         }
 
         return ToolResult.Ok(new

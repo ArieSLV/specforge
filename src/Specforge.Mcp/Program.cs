@@ -16,6 +16,7 @@ using Specforge.Mcp.Tools;
 using Specforge.Mcp.Tools.Decisions;
 using Specforge.Mcp.Tools.Items;
 using Specforge.Mcp.Tools.Ledger;
+using Specforge.Mcp.Tools.Validation;
 
 ServiceCollection services = new();
 services.AddSpecforgeStderrLogging();
@@ -42,6 +43,7 @@ services.AddSingleton<IMcpTool, AppendReviewTool>();
 services.AddSingleton<IMcpTool, AppendCommitTool>();
 services.AddSingleton<IMcpTool, DeleteReviewTool>();
 services.AddSingleton<IMcpTool, DeleteCommitTool>();
+services.AddSingleton<IMcpTool, ValidateTool>();
 
 await using ServiceProvider provider = services.BuildServiceProvider();
 

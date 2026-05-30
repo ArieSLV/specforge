@@ -1,0 +1,16 @@
+ITEM-010 evidence - validate(aspect=all) against the live specforge-mvp spec graph
+==================================================================================
+
+Driver: D:\Work\specforge\bin\specforge.exe over a SERIAL MCP stdio session, cwd = repo root
+(.specforge.json discovered; single package specforge-mvp auto-selected). Read-only. Date: 2026-05-30
+
+--- validate { aspect: "all" } ---
+aspect=all  errorCount=0  warningCount=0  infoCount=0
+message: clean
+
+--- VERIFICATION ---
+[PASS] validate(aspect=all) runs every aspect (ids, links, lifecycle, impact-coverage) over the live graph.
+[PASS] errorCount == 0 -- the spec graph used to specify validate itself is internally consistent.
+[PASS] Findings-as-data: the envelope is SUCCESS; any warnings/info are advisory only.
+[PASS] Tool count is now 21 (20 prior + validate) -- the DEC-007 MVP catalog is complete.
+This is the marquee self-consistency proof; DogfoodValidationTests.ValidateAll_LiveSpecGraph_HasNoErrors enforces it every CI run.

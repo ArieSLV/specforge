@@ -5,6 +5,7 @@ using Specforge.Core.Exceptions;
 using Specforge.Core.Identifiers;
 using Specforge.Core.Ledger;
 using Specforge.Core.Lifecycle;
+using Specforge.Core.Validation;
 
 namespace Specforge.Core.Documents;
 
@@ -175,7 +176,7 @@ public sealed class ItemService(
         File.Delete(path);
         await artifacts.RemoveAsync(artifactId, ct).ConfigureAwait(false);
         int removed = await reviews.RemoveByTargetAsync(bareId, ct).ConfigureAwait(false);
-        await history.AppendAsync(artifactId, "Deleted", $"delete_item: tombstoned {bareId}; removed {removed} review row(s); number not reused", ct).ConfigureAwait(false);
+        await history.AppendAsync(artifactId, "Deleted", TombstoneDetailFormat.Format(bareId, $"deleted via delete_item; removed {removed} review row(s); number not reused"), ct).ConfigureAwait(false);
 
         return new DeleteItemResult(bareId, path, artifactId, removed, false);
     }

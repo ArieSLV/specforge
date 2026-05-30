@@ -80,7 +80,7 @@ public class DeleteCommitToolTests
         Assert.DoesNotContain("CMT-001", await ws.ReadLedgerAsync("commits.md"), StringComparison.Ordinal);
         string history = await ws.ReadLedgerAsync("history.md");
         Assert.Contains("Deleted", history, StringComparison.Ordinal);
-        Assert.Contains("tombstoned by delete_commit", history, StringComparison.Ordinal);
+        Assert.Contains("Tombstone CMT-001:", history, StringComparison.Ordinal);
     }
 
     [Fact]
