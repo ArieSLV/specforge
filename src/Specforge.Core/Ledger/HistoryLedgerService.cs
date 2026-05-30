@@ -1,6 +1,8 @@
 using System.Globalization;
 
 using Specforge.Core.Configuration;
+using Specforge.Core.Exceptions;
+using Specforge.Core.Identifiers;
 
 namespace Specforge.Core.Ledger;
 
@@ -9,7 +11,20 @@ public sealed class HistoryLedgerService(SessionState session) : IHistoryLedgerS
 {
     private static readonly string[] DefaultHeaders = ["Date", "LedgerId", "Event", "Detail"];
 
-    public async Task AppendAsync(string targetId, string eventName, string detail, CancellationToken ct)
+    public Task AppendAsync(string targetId, string eventName, string detail, CancellationToken ct) =>
+        WriteRowAsync(targetId, eventName, detail, ct);
+
+    public Task AppendLiteralAsync(string literalTarget, string eventName, string detail, CancellationToken ct)
+    {
+        if (!HistoryLiteralTarget.IsLiteralTarget(literalTarget))
+        {
+            throw new SpecforgeInvalidIdentifierException(literalTarget ?? string.Empty, IdValidator.ExpectedPatterns);
+        }
+
+        return WriteRowAsync(literalTarget, eventName, detail, ct);
+    }
+
+    private async Task WriteRowAsync(string targetId, string eventName, string detail, CancellationToken ct)
     {
         string path = LedgerPaths.LedgerFile(session, "history.md");
         LedgerDocument document = await LedgerDocument.LoadAsync(path, DefaultHeaders, ct).ConfigureAwait(false);

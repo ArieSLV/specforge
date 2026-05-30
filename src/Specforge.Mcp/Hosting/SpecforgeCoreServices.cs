@@ -51,6 +51,7 @@ public static class SpecforgeCoreServices
         services.AddSingleton<IArtifactLedgerService, ArtifactLedgerService>();
         services.AddSingleton<IHistoryLedgerService, HistoryLedgerService>();
         services.AddSingleton<IReviewLedgerService, ReviewLedgerService>();
+        services.AddSingleton<ICommitLedgerService, CommitLedgerService>();
         services.AddSingleton<LifecycleStateMachine>();
         services.AddSingleton<DecisionFileWriter>();
         services.AddSingleton<DecisionService>();

@@ -1,0 +1,68 @@
+ITEM-009 evidence - append cycle (append_history / append_review / append_commit) via the published binary
+=========================================================================================================
+
+Driver: D:\Work\specforge\bin\specforge.exe over a SERIAL MCP stdio session (each tool result awaited
+before the next call; DEC-003 single-session). Fresh temp project via init scaffold=true, then the
+ledger schema's own ART-LEDGER-COMMITS row seeded as Placeholder to exercise the promotion path.
+Date: 2026-05-30
+
+--- create_decision { title: "Sample Decision" } ---
+{"id":"DEC-001","slug":"SAMPLE-DECISION","decisionPath":"C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\decisions\\DEC-001-SAMPLE-DECISION.md","artifactId":"ART-DEC-001","dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\decisions\\DEC-001-SAMPLE-DECISION.md","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\ledger\\artifacts.md (\u002BART-DEC-001)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\ledger\\history.md (\u002BCreated)"]}
+--- create_item { title: "Sample Item" } ---
+{"id":"ITEM-001","slug":"SAMPLE-ITEM","itemPath":"C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\items\\ITEM-001-SAMPLE-ITEM.md","artifactId":"ART-ITEM-001","dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\items\\ITEM-001-SAMPLE-ITEM.md","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\ledger\\items.md (\u002BART-ITEM-001)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\ledger\\history.md (\u002BCreated)"]}
+
+--- append_history { target: "(milestone)", event: "Stage milestone", ... } ---
+{"target":"(milestone)","event":"Stage milestone","detail":"evidence: project-wide milestone event","dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\ledger\\history.md (\u002BStage milestone)"]}
+--- append_history { target: "ART-DEC-001", event: "Note", ... } ---
+{"target":"ART-DEC-001","event":"Note","detail":"evidence: LedgerId-target event","dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\ledger\\history.md (\u002BNote)"]}
+=> append_history accepts BOTH a literal target and a LedgerId target.
+
+--- append_review { target: "ART-ITEM-001", reviewer: "User", outcome: "Refined", ... } ---
+{"target":"ART-ITEM-001","reviewId":"REV-ITEM-001-001","reviewer":"User","outcome":"Refined","dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\ledger\\reviews.md (\u002BREV-ITEM-001-NNN)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\ledger\\history.md (\u002BReviewed)"]}
+=> multi-effect: a REV-ITEM-001-001 row + a Reviewed history event (detail = outcome).
+
+--- append_commit { target: "ART-ITEM-001", gitRef: "abc1234", ... } ---
+{"id":"CMT-001","target":"ART-ITEM-001","gitRef":"abc1234","promotedCommitsLedger":true,"dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\ledger\\commits.md (\u002BCMT-001)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\ledger\\history.md (\u002BImplemented)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\ledger\\artifacts.md (ART-LEDGER-COMMITS Placeholder \u2192 Draft)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-append-22852880808f4e7b8fa2faa782c6b3de\\spec/packages/demo\\ledger\\history.md (\u002BDraft promotion event)"]}
+=> multi-effect: a CMT-001 row + an Implemented history event + first-call promotion.
+
+--- resulting ledger/commits.md ---
+# Commit Ledger
+
+Status: Draft
+
+| LedgerId | Commit SHA | Linked artifacts/items | Branch | Date | Note |
+|---|---|---|---|---|---|
+| `CMT-001` | `abc1234` | `ART-ITEM-001` | `master` | 2026-05-30 | evidence implementation commit |
+
+--- resulting ledger/artifacts.md (ART-LEDGER-COMMITS promoted Placeholder -> Draft) ---
+# Artifact Ledger
+
+Status: Draft
+
+| LedgerId | Artifact | Status | Depends on | Owner / reviewer | Last update | Next action | Blocking question |
+|---|---|---|---|---|---|---|---|
+| `ART-LEDGER-COMMITS` | spec/packages/demo/ledger/commits.md | Draft |  | User | 2026-05-30: promoted Placeholder → Draft on first append_commit | Append on every commit |  |
+| `ART-DEC-001` | spec/packages/demo/decisions/DEC-001-SAMPLE-DECISION.md | Draft |  | User | 2026-05-30: created via create_decision | Author body sections |  |
+
+--- resulting ledger/history.md ---
+# History Ledger
+
+Status: Draft
+
+| Date | LedgerId | Event | Detail |
+|---|---|---|---|
+| 2026-05-30 | `ART-DEC-001` | Created | create_decision: Sample Decision |
+| 2026-05-30 | `ART-ITEM-001` | Created | create_item: Sample Item |
+| 2026-05-30 | `(milestone)` | Stage milestone | evidence: project-wide milestone event |
+| 2026-05-30 | `ART-DEC-001` | Note | evidence: LedgerId-target event |
+| 2026-05-30 | `ART-ITEM-001` | Reviewed | Refined |
+| 2026-05-30 | `ART-ITEM-001` | Implemented | abc1234 |
+| 2026-05-30 | `ART-LEDGER-COMMITS` | Draft | commits ledger promoted Placeholder → Draft (first append_commit) |
+
+--- VERIFICATION ---
+[PASS] append_history wrote both a literal-target row ((milestone)) and a LedgerId-target row (ART-DEC-001).
+[PASS] append_review wrote REV-ITEM-001-001 + a Reviewed history event.
+[PASS] append_commit wrote CMT-001 + an Implemented history event.
+[PASS] The first append_commit promoted ART-LEDGER-COMMITS from Placeholder to Draft (promotedCommitsLedger=true).
+[PASS] Tool count is now 20 (15 prior + 5 ledger tools).
+Note: drive write tools one request->response at a time (real MCP clients serialize; DEC-003 single-session).

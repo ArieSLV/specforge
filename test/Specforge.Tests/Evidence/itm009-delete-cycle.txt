@@ -1,0 +1,69 @@
+ITEM-009 evidence - delete cycle (delete_review / delete_commit, tombstone + seq advancement)
+=============================================================================================
+
+Driver: D:\Work\specforge\bin\specforge.exe over a SERIAL MCP stdio session. Fresh temp project.
+Date: 2026-05-30
+
+Setup: create_item -> ART-ITEM-001; append_review x2 (REV-ITEM-001-001, -002); append_commit x2 (CMT-001, CMT-002).
+  append_review #1: {"target":"ART-ITEM-001","reviewId":"REV-ITEM-001-001","reviewer":"User","outcome":"Approved","dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\reviews.md (\u002BREV-ITEM-001-NNN)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\history.md (\u002BReviewed)"]}
+  append_review #2: {"target":"ART-ITEM-001","reviewId":"REV-ITEM-001-002","reviewer":"User","outcome":"Refined","dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\reviews.md (\u002BREV-ITEM-001-NNN)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\history.md (\u002BReviewed)"]}
+  append_commit #1: {"id":"CMT-001","target":"ART-ITEM-001","gitRef":"aaa1111","promotedCommitsLedger":false,"dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\commits.md (\u002BCMT-001)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\history.md (\u002BImplemented)"]}
+  append_commit #2: {"id":"CMT-002","target":"ART-ITEM-001","gitRef":"bbb2222","promotedCommitsLedger":false,"dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\commits.md (\u002BCMT-002)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\history.md (\u002BImplemented)"]}
+
+--- delete_review { id: "REV-ITEM-001-001", confirm: true } ---
+{"id":"REV-ITEM-001-001","target":"ART-ITEM-001","dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\reviews.md (-REV-ITEM-001-001)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\history.md (\u002BDeleted)"]}
+--- delete_commit { id: "CMT-001", confirm: true } ---
+{"id":"CMT-001","target":"ART-ITEM-001","gitRef":"aaa1111","dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\commits.md (-CMT-001)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\history.md (\u002BDeleted)"]}
+
+--- append_review again (seq must skip the tombstoned 001) ---
+{"target":"ART-ITEM-001","reviewId":"REV-ITEM-001-003","reviewer":"User","outcome":"Approved","dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\reviews.md (\u002BREV-ITEM-001-NNN)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\history.md (\u002BReviewed)"]}
+--- append_commit again (seq must skip the tombstoned 001) ---
+{"id":"CMT-003","target":"ART-ITEM-001","gitRef":"ccc3333","promotedCommitsLedger":false,"dryRun":false,"plannedWrites":["C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\commits.md (\u002BCMT-003)","C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm009-delete-553da90e84794aa2a70b5e42a031c20e\\spec/packages/demo\\ledger\\history.md (\u002BImplemented)"]}
+=> next REV is REV-ITEM-001-003 and next CMT is CMT-003: tombstoned numbers are never reused.
+
+--- delete_review WITHOUT confirm (gate) ---
+{"error":{"code":"specforge.tool.invalid_argument","message":"argument \u0027confirm\u0027 is invalid; expected true.","suggestion":"pass confirm=true to perform the delete; pass dryRun=true to preview","data":{"argument":"confirm","expected":"true"}}}
+
+--- resulting ledger/reviews.md ---
+# Review Ledger
+
+Status: Draft
+
+| LedgerId | Target | Reviewer | Outcome | Date | Notes |
+|---|---|---|---|---|---|
+| `REV-ITEM-001-002` | `ITEM-001` | User | Refined | 2026-05-30 |  |
+| `REV-ITEM-001-003` | `ITEM-001` | User | Approved | 2026-05-30 |  |
+
+--- resulting ledger/commits.md ---
+# Commit Ledger
+
+Status: Draft
+
+| LedgerId | Commit SHA | Linked artifacts/items | Branch | Date | Note |
+|---|---|---|---|---|---|
+| `CMT-002` | `bbb2222` | `ART-ITEM-001` | `master` | 2026-05-30 | second |
+| `CMT-003` | `ccc3333` | `ART-ITEM-001` | `master` | 2026-05-30 | third |
+
+--- resulting ledger/history.md (Deleted tombstone events) ---
+# History Ledger
+
+Status: Draft
+
+| Date | LedgerId | Event | Detail |
+|---|---|---|---|
+| 2026-05-30 | `ART-ITEM-001` | Created | create_item: Sample Item |
+| 2026-05-30 | `ART-ITEM-001` | Reviewed | Approved |
+| 2026-05-30 | `ART-ITEM-001` | Reviewed | Refined |
+| 2026-05-30 | `ART-ITEM-001` | Implemented | aaa1111 |
+| 2026-05-30 | `ART-ITEM-001` | Implemented | bbb2222 |
+| 2026-05-30 | `ART-ITEM-001` | Deleted | REV-ITEM-001-001 tombstoned by delete_review |
+| 2026-05-30 | `ART-ITEM-001` | Deleted | CMT-001 (was aaa1111) tombstoned by delete_commit |
+| 2026-05-30 | `ART-ITEM-001` | Reviewed | Approved |
+| 2026-05-30 | `ART-ITEM-001` | Implemented | ccc3333 |
+
+--- VERIFICATION ---
+[PASS] delete_review removed REV-ITEM-001-001 and appended a Deleted history event (no lifecycle gate).
+[PASS] delete_commit removed CMT-001 and appended a Deleted history event (no lifecycle gate).
+[PASS] The next append_review produced REV-ITEM-001-003 (skipped the tombstoned 001).
+[PASS] The next append_commit produced CMT-003 (skipped the tombstoned 001).
+[PASS] delete_review without confirm:true returns specforge.tool.invalid_argument (argument=confirm).
