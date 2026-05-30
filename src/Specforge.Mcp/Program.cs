@@ -23,6 +23,7 @@ services.AddSingleton<IMcpTool, ListPackagesTool>();
 services.AddSingleton<IMcpTool, UsePackageTool>();
 services.AddSingleton<IMcpTool, InfoTool>();
 services.AddSingleton<IMcpTool, InstallSkillsTool>();
+services.AddSingleton<IMcpTool, InitTool>();
 
 await using ServiceProvider provider = services.BuildServiceProvider();
 

@@ -68,6 +68,11 @@ public sealed class ToolExceptionMapper(ILogger<ToolExceptionMapper> logger)
                         partialResult = InstallSkillsTool.ToPayload(e.PartialResult),
                     }));
 
+            case SpecforgeInvalidArgumentException e:
+                return new McpErrorEnvelope(
+                    e.ErrorCode, e.Message, e.Suggestion,
+                    Data(new { argument = e.Argument, given = e.Given, expected = e.Expected }));
+
             case SpecforgeInvalidIdentifierException e:
                 return new McpErrorEnvelope(
                     e.ErrorCode, e.Message,

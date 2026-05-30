@@ -1,0 +1,38 @@
+ITEM-006 evidence — init scaffold=true against an empty directory
+=================================================================
+
+Driver: published specforge.exe, MCP tools/call init {packages:[{name:demo, path:spec/packages/demo}], scaffold:true}
+against a fresh temp directory (host cwd = the temp dir; init defaults root to cwd).
+Date: 2026-05-29
+
+--- RESULTING TREE (relative to project root) ---
+.specforge.json
+SPECFORGE.md
+CLAUDE.md
+AGENTS.md
+agents/openai.yaml
+spec/packages/demo/README.md
+spec/packages/demo/work_plan.md
+spec/packages/demo/work_ledger.md
+spec/packages/demo/decisions/README.md
+spec/packages/demo/items/README.md
+spec/packages/demo/ledger/README.md
+spec/packages/demo/ledger/artifacts.md
+spec/packages/demo/ledger/items.md
+spec/packages/demo/ledger/commits.md
+spec/packages/demo/ledger/reviews.md
+spec/packages/demo/ledger/history.md
+spec/shared/document_lifecycle.md
+spec/shared/glossary.md
+spec/shared/impact_assessment_checklist.md
+spec/shared/spec_item_contract.md
+spec/templates/decision_record.md
+spec/templates/item_spec.md
+
+--- VERIFICATION ---
+[PASS] Config written (.specforge.json).
+[PASS] Behavioral files written (SPECFORGE.md + CLAUDE.md + AGENTS.md tagged blocks).
+[PASS] Codex MCP wiring written (agents/openai.yaml) regardless of behavioralFiles.
+[PASS] Package skeleton created: decisions/, items/, ledger/ + README/work_plan/work_ledger + 5 ledger files.
+[PASS] Canonical shared docs (4) and templates (2) copied from embedded specforge.shared/** and specforge.templates/**.
+[PASS] The tree matches the structure of spec/packages/specforge-mvp/ (minus the live DEC/ITEM/ledger row content).

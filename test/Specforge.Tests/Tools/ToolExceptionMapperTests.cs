@@ -145,4 +145,14 @@ public class ToolExceptionMapperTests
         Assert.Equal("IOException", data.GetProperty("innerType").GetString());
         Assert.Equal(1, data.GetProperty("partialResult").GetProperty("agents").GetProperty("claude-code").GetProperty("writtenCount").GetInt32());
     }
+
+    [Fact]
+    public void InvalidArgument_MapsArgumentAndExpected()
+    {
+        JsonElement error = Error(Mapper.Map(new SpecforgeInvalidArgumentException("CLAUDE.md", "balanced block", "remove the partial block")));
+
+        Assert.Equal("specforge.tool.invalid_argument", error.GetProperty("code").GetString());
+        Assert.Equal("CLAUDE.md", error.GetProperty("data").GetProperty("argument").GetString());
+        Assert.Contains("balanced", error.GetProperty("data").GetProperty("expected").GetString()!, StringComparison.Ordinal);
+    }
 }

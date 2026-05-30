@@ -20,4 +20,15 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- DEC-008 / ITEM-006: embed canonical shared docs + templates for scaffold mode. Scoped tightly
+         so they never double-embed spec/skills/**. -->
+    <EmbeddedResource Include="..\..\spec\shared\**\*.*" Exclude="..\..\spec\shared\**\.gitkeep">
+      <LogicalName>specforge.shared/%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\spec\templates\**\*.*" Exclude="..\..\spec\templates\**\.gitkeep">
+      <LogicalName>specforge.templates/%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

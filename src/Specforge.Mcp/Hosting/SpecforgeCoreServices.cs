@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Specforge.Core.Configuration;
 using Specforge.Core.Diagnostics;
 using Specforge.Core.Identifiers;
+using Specforge.Core.Init;
 using Specforge.Core.Skills;
 
 namespace Specforge.Mcp.Hosting;
@@ -33,6 +34,15 @@ public static class SpecforgeCoreServices
         // ITEM-005 skill installer (DEC-005): writes the catalog to user-wide agent directories.
         services.AddSingleton<ISkillInstallTargetResolver, SkillInstallTargetResolver>();
         services.AddSingleton<ISkillInstaller, SkillInstaller>();
+
+        // ITEM-006 init (DEC-002/005/006/007/008): config write + behavioral files + scaffold.
+        services.AddSingleton<IEmbeddedTemplateCatalog>(_ => new EmbeddedTemplateCatalog(typeof(SpecforgeConfig).Assembly));
+        services.AddSingleton<ConfigWriter>();
+        services.AddSingleton<SpecforgeMdGenerator>();
+        services.AddSingleton<TaggedBlockMerger>();
+        services.AddSingleton<CodexOpenaiYamlWriter>();
+        services.AddSingleton<ScaffoldEngine>();
+        services.AddSingleton<IInitService, InitService>();
         return services;
     }
 }

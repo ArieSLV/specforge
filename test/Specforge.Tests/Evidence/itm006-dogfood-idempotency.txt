@@ -1,0 +1,25 @@
+ITEM-006 evidence — init idempotency (re-run produces zero filesystem changes)
+==============================================================================
+
+Driver: published specforge.exe, MCP tools/call init {packages:[{name:demo, path:spec/packages/demo}]}
+(behavioralFiles=all default) run TWICE against the same directory. SHA-256 of every produced file
+captured after run 1 and after run 2.
+Date: 2026-05-29
+
+Files produced: .specforge.json, SPECFORGE.md, CLAUDE.md, AGENTS.md, agents/openai.yaml
+
+--- RESULT ---
+SHA-256 tree hash after run 1 == SHA-256 tree hash after run 2  =>  TRUE
+
+--- VERIFICATION ---
+[PASS] Re-running init is idempotent: every file is byte-identical across the two runs.
+[PASS] .specforge.json round-trips byte-equivalent (ConfigWriter canonical serialization is deterministic).
+[PASS] SPECFORGE.md regenerates byte-equivalent (same binary + same date).
+[PASS] CLAUDE.md / AGENTS.md tagged blocks: the second run replaces the block with identical content, so
+       the file is unchanged (user content outside the block, when present, is preserved byte-for-byte —
+       see TaggedBlockMergerTests).
+[PASS] agents/openai.yaml is overwritten with identical content.
+
+Note: this is the meaningful idempotency proof (run N == run N+1) demonstrated in an isolated temp
+workspace so the specforge repo root is not mutated. The repo's own .specforge.json continues to be
+read by every prior-item smoke test, exercising the config-read path against the live file.

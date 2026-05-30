@@ -1,0 +1,30 @@
+ITEM-006 evidence — tagged-block imbalance error envelope
+=========================================================
+
+Setup: a temp directory seeded with a malformed CLAUDE.md containing the opening delimiter but no
+closing delimiter:
+    <!-- specforge:start -->
+    partial block, no end delimiter
+
+Driver: published specforge.exe, MCP tools/call init {packages:[{name:demo, path:spec/packages/demo}]}.
+Date: 2026-05-29
+
+--- RECEIVED (id:2, isError:true, content[0].text decoded) ---
+{
+  "error": {
+    "code": "specforge.tool.invalid_argument",
+    "message": "Invalid argument 'C:\\...\\CLAUDE.md': expected balanced <!-- specforge:start --> ... <!-- specforge:end --> block.",
+    "suggestion": "remove the partial block or run init with behavioralFiles=none",
+    "data": {
+      "argument": "C:\\...\\CLAUDE.md",
+      "given": null,
+      "expected": "balanced <!-- specforge:start --> ... <!-- specforge:end --> block"
+    }
+  }
+}
+
+--- VERIFICATION ---
+[PASS] An imbalanced tagged block (start without end) surfaces as specforge.tool.invalid_argument.
+[PASS] data.argument names the offending file; data.expected describes the balanced-block requirement;
+       suggestion matches DEC-008 ("remove the partial block or run init with behavioralFiles=none").
+[PASS] The tool result is flagged isError:true (the host maps the SpecforgeInvalidArgumentException).
