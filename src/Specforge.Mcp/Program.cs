@@ -11,6 +11,7 @@ using ModelContextProtocol.Server;
 using Specforge.Core.Diagnostics;
 using Specforge.Core.Exceptions;
 using Specforge.Core.Skills;
+using Specforge.Mcp.Errors;
 using Specforge.Mcp.Hosting;
 using Specforge.Mcp.Tools;
 using Specforge.Mcp.Tools.Decisions;
@@ -23,6 +24,7 @@ services.AddSpecforgeStderrLogging();
 services.AddSpecforgeCore();
 services.AddSingleton(new SpecforgeWorkingDirectory(Directory.GetCurrentDirectory()));
 services.AddSingleton<ToolExceptionMapper>();
+services.AddSingleton<IEnvelopeRenderer, EnvelopeRenderer>();
 services.AddSingleton<IMcpTool, ListPackagesTool>();
 services.AddSingleton<IMcpTool, UsePackageTool>();
 services.AddSingleton<IMcpTool, InfoTool>();
@@ -48,7 +50,7 @@ services.AddSingleton<IMcpTool, ValidateTool>();
 await using ServiceProvider provider = services.BuildServiceProvider();
 
 Dictionary<string, IMcpTool> tools = provider.GetServices<IMcpTool>().ToDictionary(t => t.Name, t => t);
-ToolExceptionMapper mapper = provider.GetRequiredService<ToolExceptionMapper>();
+IEnvelopeRenderer renderer = provider.GetRequiredService<IEnvelopeRenderer>();
 BinaryInfo binaryInfo = provider.GetRequiredService<BinaryInfo>();
 ILoggerFactory loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
@@ -80,11 +82,7 @@ McpServerOptions options = new()
             string name = context.Params?.Name ?? string.Empty;
             if (!tools.TryGetValue(name, out IMcpTool? tool))
             {
-                return ErrorResult(new McpErrorEnvelope(
-                    "specforge.tool.invalid_argument",
-                    $"unknown tool '{name}'",
-                    "call a tool from the advertised list",
-                    JsonSerializer.SerializeToElement(new { argument = "name", given = name, expected = "a known tool name" })));
+                return ErrorResult(EnvelopeRenderer.InvalidArgument("name", name, "a known tool name", "call a tool from the advertised list"));
             }
 
             try
@@ -95,13 +93,13 @@ McpServerOptions options = new()
                 {
                     ToolResult.Success success => SuccessResult(success.Payload),
                     ToolResult.Failure failure => ErrorResult(failure.Envelope),
-                    _ => ErrorResult(mapper.Map(new InvalidOperationException("unrecognized tool result"))),
+                    _ => ErrorResult(renderer.Render(new InvalidOperationException("unrecognized tool result"))),
                 };
             }
 #pragma warning disable CA1031 // host boundary: every unhandled exception becomes a structured envelope.
             catch (Exception ex)
             {
-                return ErrorResult(mapper.Map(ex));
+                return ErrorResult(renderer.Render(ex));
             }
 #pragma warning restore CA1031
         },

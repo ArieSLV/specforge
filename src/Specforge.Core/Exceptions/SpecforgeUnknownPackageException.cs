@@ -9,7 +9,7 @@ namespace Specforge.Core.Exceptions;
 public sealed class SpecforgeUnknownPackageException : SpecforgeException
 {
     public SpecforgeUnknownPackageException(string requestedName, IReadOnlyList<SpecforgePackageConfig> availablePackages)
-        : base("specforge.package.unknown",
+        : base(Diagnostics.SpecforgeErrorCode.PackageUnknown,
             $"No package named '{requestedName}' exists in the active configuration.")
     {
         RequestedName = requestedName;

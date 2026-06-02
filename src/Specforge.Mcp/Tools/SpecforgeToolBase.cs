@@ -1,6 +1,7 @@
 using System.Text.Json;
 
 using Specforge.Core.Configuration;
+using Specforge.Mcp.Errors;
 using Specforge.Mcp.Hosting;
 
 namespace Specforge.Mcp.Tools;
@@ -59,29 +60,13 @@ public abstract class SpecforgeToolBase(ConfigLoader loader, SessionState sessio
     protected static bool GetBool(JsonElement args, string name) =>
         args.ValueKind == JsonValueKind.Object && args.TryGetProperty(name, out JsonElement element) && element.ValueKind == JsonValueKind.True;
 
-    /// <summary>Builds a <c>specforge.tool.invalid_argument</c> failure result.</summary>
-    protected static ToolResult InvalidArgument(string argument, string expected) => ToolResult.Fail(new McpErrorEnvelope(
-        "specforge.tool.invalid_argument",
-        $"argument '{argument}' is invalid; expected {expected}.",
-        "correct the argument value",
-        JsonSerializer.SerializeToElement(new { argument, expected })));
-
-    /// <summary>
-    /// Builds a <c>specforge.id.not_found</c> failure result (ITEM-009 inline emission). ITEM-011's
-    /// audit later formalizes this code in the DEC-007 catalog and reroutes it through a typed exception.
-    /// </summary>
-    protected static ToolResult IdNotFound(string id) => ToolResult.Fail(new McpErrorEnvelope(
-        "specforge.id.not_found",
-        $"no ledger row found for id '{id}'.",
-        "verify the id by reading the relevant ledger file or via get_decision/get_item",
-        JsonSerializer.SerializeToElement(new { id })));
+    /// <summary>Builds a <c>specforge.tool.invalid_argument</c> failure result (via the centralized renderer).</summary>
+    protected static ToolResult InvalidArgument(string argument, string expected) =>
+        ToolResult.Fail(EnvelopeRenderer.InvalidArgument(argument, given: null, expected));
 
     /// <summary>Builds the <c>confirm:true</c>-required failure result shared by the delete tools (DEC-007 Delete Semantics).</summary>
-    protected static ToolResult ConfirmRequired() => ToolResult.Fail(new McpErrorEnvelope(
-        "specforge.tool.invalid_argument",
-        "argument 'confirm' is invalid; expected true.",
-        "pass confirm=true to perform the delete; pass dryRun=true to preview",
-        JsonSerializer.SerializeToElement(new { argument = "confirm", expected = "true" })));
+    protected static ToolResult ConfirmRequired() =>
+        ToolResult.Fail(EnvelopeRenderer.InvalidArgument("confirm", given: null, "true", "pass confirm=true to perform the delete; pass dryRun=true to preview"));
 
     /// <summary>Maps a decision/item target (bare or ART form) to its <c>ART-*</c> artifact id.</summary>
     protected static string ToArtifactId(string target) =>

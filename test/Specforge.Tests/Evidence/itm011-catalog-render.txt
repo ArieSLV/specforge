@@ -1,0 +1,264 @@
+ITEM-011 evidence - one rendered envelope per catalog code (all 14 reachable)
+=============================================================================
+
+Source: the production Specforge.Mcp.Errors.EnvelopeRenderer (the same code path the MCP host
+uses). Each typed Core exception renders its catalog code; tool.invalid_argument and
+tool.internal_error are the two directly-emitted codes. Date: 2026-05-30
+
+--- specforge.config.not_found (from SpecforgeConfigNotFoundException) ---
+{
+  "error": {
+    "code": "specforge.config.not_found",
+    "message": "No .specforge.json found on or above \u0027/start\u0027.",
+    "suggestion": "run init to generate .specforge.json at the project root",
+    "data": {
+      "searchedPath": "/start"
+    }
+  }
+}
+
+--- specforge.config.schema_version_unsupported (from SpecforgeSchemaVersionException) ---
+{
+  "error": {
+    "code": "specforge.config.schema_version_unsupported",
+    "message": "Configuration at \u0027/p\u0027 declares an unsupported or invalid schemaVersion.",
+    "suggestion": "upgrade specforge",
+    "data": {
+      "path": "/p",
+      "claimedVersion": 2,
+      "supportedRange": [
+        1,
+        1
+      ]
+    }
+  }
+}
+
+--- specforge.config.validation_failed (from SpecforgeConfigValidationException) ---
+{
+  "error": {
+    "code": "specforge.config.validation_failed",
+    "message": "Configuration at \u0027/p\u0027 failed shape validation with 1 error(s).",
+    "suggestion": "fix the listed fields in .specforge.json",
+    "data": {
+      "path": "/p",
+      "errors": [
+        {
+          "pointer": "/packages",
+          "message": "bad"
+        }
+      ]
+    }
+  }
+}
+
+--- specforge.package.not_selected (from SpecforgePackageNotSelectedException) ---
+{
+  "error": {
+    "code": "specforge.package.not_selected",
+    "message": "No active package is selected and the configuration defines more than one package.",
+    "suggestion": "call use_package with one of the listed names",
+    "data": {
+      "availablePackages": [
+        {
+          "name": "alpha",
+          "path": "spec/packages/alpha"
+        },
+        {
+          "name": "beta",
+          "path": "spec/packages/beta"
+        }
+      ]
+    }
+  }
+}
+
+--- specforge.package.unknown (from SpecforgeUnknownPackageException) ---
+{
+  "error": {
+    "code": "specforge.package.unknown",
+    "message": "No package named \u0027x\u0027 exists in the active configuration.",
+    "suggestion": "call use_package with one of the listed names",
+    "data": {
+      "requestedName": "x",
+      "availablePackages": [
+        {
+          "name": "alpha",
+          "path": "spec/packages/alpha"
+        },
+        {
+          "name": "beta",
+          "path": "spec/packages/beta"
+        }
+      ]
+    }
+  }
+}
+
+--- specforge.id.invalid (from SpecforgeInvalidIdentifierException) ---
+{
+  "error": {
+    "code": "specforge.id.invalid",
+    "message": "Identifier \u0027dec-001\u0027 is not a valid specforge identifier.",
+    "suggestion": "correct the identifier to match one of the expected patterns",
+    "data": {
+      "given": "dec-001",
+      "expectedPatterns": [
+        "^[A-Z]{2,6}-[0-9]{3}$"
+      ]
+    }
+  }
+}
+
+--- specforge.id.not_found (from SpecforgeIdNotFoundException) ---
+{
+  "error": {
+    "code": "specforge.id.not_found",
+    "message": "No ledger row found for id \u0027REV-DEC-001-002\u0027.",
+    "suggestion": "verify the identifier exists in this package; use the relevant list_* tool to enumerate available IDs",
+    "data": {
+      "id": "REV-DEC-001-002"
+    }
+  }
+}
+
+--- specforge.id.kind_reserved (from SpecforgeReservedKindException) ---
+{
+  "error": {
+    "code": "specforge.id.kind_reserved",
+    "message": "Kind \u0027DEC\u0027 is reserved and cannot appear in a package\u0027s extraKinds.",
+    "suggestion": "choose a non-reserved kind for extraKinds",
+    "data": {
+      "given": "DEC",
+      "reservedKinds": [
+        "DEC",
+        "ITEM",
+        "ART",
+        "REV",
+        "CMT"
+      ]
+    }
+  }
+}
+
+--- specforge.id.kind_exhausted (from SpecforgeKindExhaustedException) ---
+{
+  "error": {
+    "code": "specforge.id.kind_exhausted",
+    "message": "Kind \u0027XYZ\u0027 in package \u0027pkg\u0027 has reached the 999-identifier limit.",
+    "suggestion": "split the package or otherwise reorganize \u2014 999 IDs of one kind reached",
+    "data": {
+      "kind": "XYZ",
+      "package": "pkg"
+    }
+  }
+}
+
+--- specforge.skills.install_failed (from SpecforgeSkillInstallException) ---
+{
+  "error": {
+    "code": "specforge.skills.install_failed",
+    "message": "Skill install failed for agent \u0027codex\u0027 at \u0027/p/x\u0027: denied",
+    "suggestion": "check filesystem permissions on the target directory",
+    "data": {
+      "agent": "codex",
+      "path": "/p/x",
+      "innerType": "IOException",
+      "innerMessage": "denied",
+      "partialResult": {
+        "agents": {
+          "claude-code": {
+            "writtenCount": 1,
+            "writtenPaths": [
+              "/p/a"
+            ],
+            "overwrittenPaths": []
+          }
+        },
+        "binaryVersion": "1.0.0"
+      }
+    }
+  }
+}
+
+--- specforge.skills.catalog_missing (from SpecforgeEmbeddedSkillNotFoundException) ---
+{
+  "error": {
+    "code": "specforge.skills.catalog_missing",
+    "message": "broken catalog",
+    "suggestion": "rebuild specforge \u2014 the binary is missing embedded skill resources",
+    "data": {
+      "resourceName": "specforge.skills/x/SKILL.md"
+    }
+  }
+}
+
+--- specforge.lifecycle.delete_forbidden (from SpecforgeDeleteForbiddenException) ---
+{
+  "error": {
+    "code": "specforge.lifecycle.delete_forbidden",
+    "message": "Cannot delete \u0027DEC-001\u0027 in status \u0027Approved\u0027; delete is allowed only from a pre-Approved state.",
+    "suggestion": "transition the artifact to Withdrawn via set_*_status instead, or supersede with a new artifact",
+    "data": {
+      "id": "DEC-001",
+      "currentStatus": "Approved",
+      "allowedStates": [
+        "Not started",
+        "Placeholder",
+        "Draft",
+        "Draft for user review"
+      ]
+    }
+  }
+}
+
+--- specforge.tool.invalid_argument (from SpecforgeInvalidArgumentException) ---
+{
+  "error": {
+    "code": "specforge.tool.invalid_argument",
+    "message": "Invalid argument \u0027CLAUDE.md\u0027: expected balanced block.",
+    "suggestion": "remove the partial block",
+    "data": {
+      "argument": "CLAUDE.md",
+      "given": null,
+      "expected": "balanced block"
+    }
+  }
+}
+
+--- specforge.tool.invalid_argument (EnvelopeRenderer.InvalidArgument) ---
+{
+  "error": {
+    "code": "specforge.tool.invalid_argument",
+    "message": "argument \u0027aspect\u0027 is invalid; expected [\u0022ids\u0022,\u0022links\u0022,\u0022lifecycle\u0022,\u0022impact-coverage\u0022,\u0022all\u0022].",
+    "suggestion": "choose one of the listed aspects",
+    "data": {
+      "argument": "aspect",
+      "given": "bogus",
+      "expected": [
+        "ids",
+        "links",
+        "lifecycle",
+        "impact-coverage",
+        "all"
+      ]
+    }
+  }
+}
+
+--- specforge.tool.internal_error (unmapped exception) ---
+{
+  "error": {
+    "code": "specforge.tool.internal_error",
+    "message": "an internal error occurred while handling the tool call",
+    "suggestion": "check the specforge stderr log entry tagged with the correlation id",
+    "data": {
+      "correlationId": "d3dfc52952f1437b82963558657a302c"
+    }
+  }
+}
+
+--- VERIFICATION ---
+[PASS] Rendered 14 distinct codes; SpecforgeErrorCode.AllCodes.Count = 14.
+[PASS] every catalog code is reachable via a production path.
+[PASS] CatalogDriftTests proves DEC-007's catalog table lists exactly these 14 codes.

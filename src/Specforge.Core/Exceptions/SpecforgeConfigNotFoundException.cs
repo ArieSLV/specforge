@@ -7,7 +7,7 @@ namespace Specforge.Core.Exceptions;
 public sealed class SpecforgeConfigNotFoundException : SpecforgeException
 {
     public SpecforgeConfigNotFoundException(string searchedPath)
-        : base("specforge.config.not_found",
+        : base(Diagnostics.SpecforgeErrorCode.ConfigNotFound,
             $"No .specforge.json found on or above '{searchedPath}'.")
     {
         SearchedPath = searchedPath;

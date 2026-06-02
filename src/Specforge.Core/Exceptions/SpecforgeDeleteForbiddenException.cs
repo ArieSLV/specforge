@@ -7,7 +7,7 @@ namespace Specforge.Core.Exceptions;
 public sealed class SpecforgeDeleteForbiddenException : SpecforgeException
 {
     public SpecforgeDeleteForbiddenException(string id, string currentStatus, IReadOnlyList<string> allowedStates)
-        : base("specforge.lifecycle.delete_forbidden", $"Cannot delete '{id}' in status '{currentStatus}'; delete is allowed only from a pre-Approved state.")
+        : base(Diagnostics.SpecforgeErrorCode.LifecycleDeleteForbidden, $"Cannot delete '{id}' in status '{currentStatus}'; delete is allowed only from a pre-Approved state.")
     {
         Id = id;
         CurrentStatus = currentStatus;

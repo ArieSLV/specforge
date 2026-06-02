@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 using Specforge.Core.Configuration;
 using Specforge.Core.Exceptions;
+using Specforge.Mcp.Errors;
 using Specforge.Mcp.Hosting;
 using Specforge.Mcp.Tools;
 using Specforge.Tests.TestSupport;
@@ -42,7 +43,7 @@ public class UsePackageToolTests
 
         Assert.Equal("missing", ex.RequestedName);
 
-        McpErrorEnvelope envelope = new ToolExceptionMapper(NullLogger<ToolExceptionMapper>.Instance).Map(ex);
+        McpErrorEnvelope envelope = new EnvelopeRenderer(new ToolExceptionMapper(), NullLogger<EnvelopeRenderer>.Instance).Render(ex);
         Assert.Equal("specforge.package.unknown", envelope.Code);
     }
 

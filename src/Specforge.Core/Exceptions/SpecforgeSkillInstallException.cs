@@ -10,7 +10,7 @@ namespace Specforge.Core.Exceptions;
 public sealed class SpecforgeSkillInstallException : SpecforgeException
 {
     public SpecforgeSkillInstallException(string agent, string path, Type innerExceptionType, string innerMessage, SkillInstallResult partialResult)
-        : base("specforge.skills.install_failed", $"Skill install failed for agent '{agent}' at '{path}': {innerMessage}")
+        : base(Diagnostics.SpecforgeErrorCode.SkillsInstallFailed, $"Skill install failed for agent '{agent}' at '{path}': {innerMessage}")
     {
         Agent = agent;
         Path = path;

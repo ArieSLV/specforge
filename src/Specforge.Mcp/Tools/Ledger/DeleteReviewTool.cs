@@ -1,6 +1,7 @@
 using System.Text.Json;
 
 using Specforge.Core.Configuration;
+using Specforge.Core.Exceptions;
 using Specforge.Core.Identifiers;
 using Specforge.Core.Ledger;
 using Specforge.Core.Validation;
@@ -65,7 +66,7 @@ public sealed class DeleteReviewTool(
             .Concat(await reviews.FindByTargetAsync(artifactTarget, ct).ConfigureAwait(false));
         if (!candidates.Any(r => string.Equals(r.LedgerId, id, StringComparison.Ordinal)))
         {
-            return IdNotFound(id);
+            throw new SpecforgeIdNotFoundException(id);
         }
 
         bool dryRun = GetBool(args, "dryRun");

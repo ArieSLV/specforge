@@ -41,11 +41,7 @@ public sealed class UsePackageTool(ConfigLoader loader, SessionState session, Sp
             || nameElement.ValueKind != JsonValueKind.String
             || string.IsNullOrWhiteSpace(nameElement.GetString()))
         {
-            return ToolResult.Fail(new McpErrorEnvelope(
-                "specforge.tool.invalid_argument",
-                "argument 'name' is required and must be a non-empty string",
-                "correct the argument value",
-                JsonSerializer.SerializeToElement(new { argument = "name", expected = "non-empty string" })));
+            return ToolResult.Fail(Errors.EnvelopeRenderer.InvalidArgument("name", given: null, "a non-empty string"));
         }
 
         string name = nameElement.GetString()!;

@@ -7,7 +7,7 @@ namespace Specforge.Core.Exceptions;
 public sealed class SpecforgeInvalidIdentifierException : SpecforgeException
 {
     public SpecforgeInvalidIdentifierException(string given, IReadOnlyList<string> expectedPatterns)
-        : base("specforge.id.invalid", $"Identifier '{given}' is not a valid specforge identifier.")
+        : base(Diagnostics.SpecforgeErrorCode.IdInvalid, $"Identifier '{given}' is not a valid specforge identifier.")
     {
         Given = given;
         ExpectedPatterns = expectedPatterns;

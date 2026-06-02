@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 
 using Specforge.Core.Configuration;
+using Specforge.Core.Exceptions;
 using Specforge.Core.Ledger;
 using Specforge.Mcp.Hosting;
 
@@ -71,7 +72,7 @@ public sealed class AppendCommitTool(
         string artifactId = ToArtifactId(target);
         if (await artifacts.FindByLedgerIdAsync(artifactId, ct).ConfigureAwait(false) is null)
         {
-            return IdNotFound(target);
+            throw new SpecforgeIdNotFoundException(target);
         }
 
         bool dryRun = GetBool(args, "dryRun");

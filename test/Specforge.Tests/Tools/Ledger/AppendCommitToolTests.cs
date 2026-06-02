@@ -1,6 +1,7 @@
 using System.Text.Json;
 
 using Specforge.Core.Configuration;
+using Specforge.Core.Exceptions;
 using Specforge.Core.Ledger;
 using Specforge.Core.Lifecycle;
 using Specforge.Mcp.Hosting;
@@ -95,14 +96,14 @@ public class AppendCommitToolTests
     }
 
     [Fact]
-    public async Task NonExistentTarget_ReturnsIdNotFound()
+    public async Task NonExistentTarget_ThrowsIdNotFound()
     {
         using PackageWorkspace ws = new();
         await SeedAsync(ws, withPlaceholderCommitsLedger: false);
 
-        ToolResult result = await ToolFor(ws).InvokeAsync(Args("""{"target":"ART-ITEM-404","gitRef":"abc1234","detail":"x"}"""), CancellationToken.None);
-
-        Assert.Equal("specforge.id.not_found", Assert.IsType<ToolResult.Failure>(result).Envelope.Code);
+        SpecforgeIdNotFoundException ex = await Assert.ThrowsAsync<SpecforgeIdNotFoundException>(
+            () => ToolFor(ws).InvokeAsync(Args("""{"target":"ART-ITEM-404","gitRef":"abc1234","detail":"x"}"""), CancellationToken.None));
+        Assert.Equal("ART-ITEM-404", ex.Id);
     }
 
     [Fact]

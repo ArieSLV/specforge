@@ -1,6 +1,7 @@
 using System.Text.Json;
 
 using Specforge.Core.Configuration;
+using Specforge.Core.Exceptions;
 using Specforge.Core.Ledger;
 using Specforge.Mcp.Hosting;
 using Specforge.Mcp.Tools;
@@ -55,12 +56,12 @@ public class AppendReviewToolTests
     }
 
     [Fact]
-    public async Task NonExistentTarget_ReturnsIdNotFound()
+    public async Task NonExistentTarget_ThrowsIdNotFound()
     {
         using PackageWorkspace ws = new();
-        ToolResult result = await ToolFor(ws).InvokeAsync(Args("""{"target":"ART-ITEM-999","reviewer":"User","outcome":"Approved"}"""), CancellationToken.None);
-
-        Assert.Equal("specforge.id.not_found", Assert.IsType<ToolResult.Failure>(result).Envelope.Code);
+        SpecforgeIdNotFoundException ex = await Assert.ThrowsAsync<SpecforgeIdNotFoundException>(
+            () => ToolFor(ws).InvokeAsync(Args("""{"target":"ART-ITEM-999","reviewer":"User","outcome":"Approved"}"""), CancellationToken.None));
+        Assert.Equal("ART-ITEM-999", ex.Id);
     }
 
     [Fact]

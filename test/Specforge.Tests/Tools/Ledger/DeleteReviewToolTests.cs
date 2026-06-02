@@ -1,6 +1,7 @@
 using System.Text.Json;
 
 using Specforge.Core.Configuration;
+using Specforge.Core.Exceptions;
 using Specforge.Core.Ledger;
 using Specforge.Mcp.Hosting;
 using Specforge.Mcp.Tools;
@@ -42,12 +43,12 @@ public class DeleteReviewToolTests
     }
 
     [Fact]
-    public async Task NonExistent_ReturnsIdNotFound()
+    public async Task NonExistent_ThrowsIdNotFound()
     {
         using PackageWorkspace ws = new();
-        ToolResult result = await DeleteTool(ws).InvokeAsync(Args("""{"id":"REV-DEC-001-001","confirm":true}"""), CancellationToken.None);
-
-        Assert.Equal("specforge.id.not_found", Assert.IsType<ToolResult.Failure>(result).Envelope.Code);
+        SpecforgeIdNotFoundException ex = await Assert.ThrowsAsync<SpecforgeIdNotFoundException>(
+            () => DeleteTool(ws).InvokeAsync(Args("""{"id":"REV-DEC-001-001","confirm":true}"""), CancellationToken.None));
+        Assert.Equal("REV-DEC-001-001", ex.Id);
     }
 
     [Fact]

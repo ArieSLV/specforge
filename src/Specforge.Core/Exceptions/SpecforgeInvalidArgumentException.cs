@@ -8,7 +8,7 @@ namespace Specforge.Core.Exceptions;
 public sealed class SpecforgeInvalidArgumentException : SpecforgeException
 {
     public SpecforgeInvalidArgumentException(string argument, string expected, string suggestion, string? given = null)
-        : base("specforge.tool.invalid_argument", $"Invalid argument '{argument}': expected {expected}.")
+        : base(Diagnostics.SpecforgeErrorCode.ToolInvalidArgument, $"Invalid argument '{argument}': expected {expected}.")
     {
         Argument = argument;
         Expected = expected;

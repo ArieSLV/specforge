@@ -1,6 +1,7 @@
 using System.Text.Json;
 
 using Specforge.Core.Configuration;
+using Specforge.Core.Exceptions;
 using Specforge.Core.Ledger;
 using Specforge.Mcp.Hosting;
 
@@ -60,7 +61,7 @@ public sealed class AppendReviewTool(
         string bareTarget = BareTarget(artifactId);
         if (await artifacts.FindByLedgerIdAsync(artifactId, ct).ConfigureAwait(false) is null)
         {
-            return IdNotFound(target);
+            throw new SpecforgeIdNotFoundException(target);
         }
 
         string? notes = GetOptionalString(args, "notes");

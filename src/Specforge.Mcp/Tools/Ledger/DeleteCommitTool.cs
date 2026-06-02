@@ -1,6 +1,7 @@
 using System.Text.Json;
 
 using Specforge.Core.Configuration;
+using Specforge.Core.Exceptions;
 using Specforge.Core.Identifiers;
 using Specforge.Core.Ledger;
 using Specforge.Core.Validation;
@@ -60,7 +61,7 @@ public sealed class DeleteCommitTool(
         CommitRow? row = await commits.FindByLedgerIdAsync(id, ct).ConfigureAwait(false);
         if (row is null)
         {
-            return IdNotFound(id);
+            throw new SpecforgeIdNotFoundException(id);
         }
 
         bool dryRun = GetBool(args, "dryRun");

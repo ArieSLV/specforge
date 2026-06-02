@@ -11,7 +11,7 @@ namespace Specforge.Core.Exceptions;
 public sealed class SpecforgeConfigValidationException : SpecforgeException
 {
     public SpecforgeConfigValidationException(string path, IReadOnlyList<ConfigValidationError> errors)
-        : base("specforge.config.validation_failed",
+        : base(Diagnostics.SpecforgeErrorCode.ConfigValidationFailed,
             $"Configuration at '{path}' failed shape validation with {errors.Count} error(s).")
     {
         Path = path;

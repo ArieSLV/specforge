@@ -75,6 +75,7 @@ This catalog freezes the namespace; future DECs add codes by amendment.
 | `specforge.package.not_selected` | `SpecforgePackageNotSelectedException` | `{ availablePackages: [{ name: string, path: string }] }` | `"call use_package with one of the listed names"` |
 | `specforge.package.unknown` | `SpecforgeUnknownPackageException` | `{ requestedName: string, availablePackages: [{ name, path }] }` | `"call use_package with one of the listed names"` |
 | `specforge.id.invalid` | `SpecforgeInvalidIdentifierException` | `{ given: string, expectedPatterns: [string] }` | `"correct the identifier to match one of the expected patterns"` |
+| `specforge.id.not_found` | `SpecforgeIdNotFoundException` (defined in ITEM-011) | `{ id: string }` | `"verify the identifier exists in this package; use the relevant list_* tool to enumerate available IDs"` |
 | `specforge.id.kind_reserved` | `SpecforgeReservedKindException` | `{ given: string, reservedKinds: [string] }` | `"choose a non-reserved kind for extraKinds"` |
 | `specforge.id.kind_exhausted` | `SpecforgeKindExhaustedException` | `{ kind: string, package: string }` | `"split the package or otherwise reorganize — 999 IDs of one kind reached"` |
 | `specforge.skills.install_failed` | `SpecforgeSkillInstallException` | `{ agent: string, path: string, innerType: string, innerMessage: string }` | `"check filesystem permissions on the target directory"` |
@@ -273,6 +274,7 @@ Every Stage 1 ITEM that implements a tool publishes a schema of equivalent richn
 - **Tool surface is fixed at 17 for MVP**. Adding a new tool is a DEC amendment to DEC-007 (or a superseding DEC). Adding an enum value to an existing tool (a new `validate` aspect, a new `set_decision_status` `status`) is additive and does not require a DEC.
 - **Every Stage 1 ITEM that ships a tool publishes its full JSON Schema** following the example richness above. Schemas live in the implementing item spec.
 - **Error envelope is fixed**. Future error types add a row to the error-code catalog by DEC amendment. No tool ships an ad-hoc error format.
+- **Catalog amended from 13 to 14 codes by ITEM-011** to close the audit gap on `delete_review` / `delete_commit` (and the `append_*` target checks) missing-row emission: `specforge.id.not_found`, now sourced from the typed `SpecforgeIdNotFoundException`. The amendment is structurally additive — no existing code's contract changes.
 - **`Specforge.Mcp` carries argument validation and envelope construction**; `Specforge.Core` raises typed exceptions per DEC-002/003/004/005/006. Mapping table from Core exception to MCP code lives in one place in `Specforge.Mcp`.
 - **`init` is the bootstrap for both single-project and external-adoption use cases** (DEC-002 Consequences). It always writes the current `schemaVersion` (DEC-006).
 - **Codex `agents/openai.yaml` is owned by `init`** (DEC-005 boundary): generated when `init` runs in a Codex-aware mode (auto-detected from the host or specified by an `--include-codex` flag inside the tool args).

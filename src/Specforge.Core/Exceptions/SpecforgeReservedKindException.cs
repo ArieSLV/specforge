@@ -7,7 +7,7 @@ namespace Specforge.Core.Exceptions;
 public sealed class SpecforgeReservedKindException : SpecforgeException
 {
     public SpecforgeReservedKindException(string given, IReadOnlyList<string> reservedKinds)
-        : base("specforge.id.kind_reserved", $"Kind '{given}' is reserved and cannot appear in a package's extraKinds.")
+        : base(Diagnostics.SpecforgeErrorCode.IdKindReserved, $"Kind '{given}' is reserved and cannot appear in a package's extraKinds.")
     {
         Given = given;
         ReservedKinds = reservedKinds;

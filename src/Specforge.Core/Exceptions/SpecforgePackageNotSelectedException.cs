@@ -9,7 +9,7 @@ namespace Specforge.Core.Exceptions;
 public sealed class SpecforgePackageNotSelectedException : SpecforgeException
 {
     public SpecforgePackageNotSelectedException(IReadOnlyList<SpecforgePackageConfig> availablePackages)
-        : base("specforge.package.not_selected",
+        : base(Diagnostics.SpecforgeErrorCode.PackageNotSelected,
             "No active package is selected and the configuration defines more than one package.")
     {
         AvailablePackages = availablePackages;

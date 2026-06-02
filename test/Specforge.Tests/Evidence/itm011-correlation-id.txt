@@ -1,0 +1,25 @@
+ITEM-011 evidence - tool.internal_error correlationId cross-reference
+====================================================================
+
+An unmapped exception renders tool.internal_error WITHOUT leaking the type/stack (DEC-007);
+the full detail is written to stderr under the same correlationId (DEC-003). Date: 2026-05-30
+
+--- AI-visible envelope (stdout) ---
+{
+  "error": {
+    "code": "specforge.tool.internal_error",
+    "message": "an internal error occurred while handling the tool call",
+    "suggestion": "check the specforge stderr log entry tagged with the correlation id",
+    "data": {
+      "correlationId": "d3dfc52952f1437b82963558657a302c"
+    }
+  }
+}
+
+--- stderr log line (captured from the renderer's ILogger) ---
+Unhandled exception in tool invocation. correlationId=d3dfc52952f1437b82963558657a302c
+
+--- VERIFICATION ---
+[PASS] envelope data.correlationId = d3dfc52952f1437b82963558657a302c
+[PASS] the same correlationId appears in the stderr log entry.
+[PASS] the envelope message/data carry no exception type or stack trace (only the correlationId).

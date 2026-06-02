@@ -8,7 +8,7 @@ namespace Specforge.Core.Exceptions;
 public sealed class SpecforgeKindExhaustedException : SpecforgeException
 {
     public SpecforgeKindExhaustedException(string kind, string package)
-        : base("specforge.id.kind_exhausted", $"Kind '{kind}' in package '{package}' has reached the 999-identifier limit.")
+        : base(Diagnostics.SpecforgeErrorCode.IdKindExhausted, $"Kind '{kind}' in package '{package}' has reached the 999-identifier limit.")
     {
         Kind = kind;
         Package = package;

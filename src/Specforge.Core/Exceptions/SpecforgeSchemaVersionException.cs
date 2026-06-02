@@ -8,7 +8,7 @@ namespace Specforge.Core.Exceptions;
 public sealed class SpecforgeSchemaVersionException : SpecforgeException
 {
     public SpecforgeSchemaVersionException(string path, object? claimedVersion, IReadOnlyList<int> supportedRange, string suggestion)
-        : base("specforge.config.schema_version_unsupported",
+        : base(Diagnostics.SpecforgeErrorCode.ConfigSchemaVersionUnsupported,
             $"Configuration at '{path}' declares an unsupported or invalid schemaVersion.")
     {
         Path = path;

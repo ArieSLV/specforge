@@ -35,11 +35,7 @@ public sealed class ValidateTool(ConfigLoader loader, SessionState session, Spec
     {
         if (!TryGetString(args, "aspect", out string aspect) || !ValidationAspect.Accepted.Contains(aspect, StringComparer.Ordinal))
         {
-            return ToolResult.Fail(new McpErrorEnvelope(
-                "specforge.tool.invalid_argument",
-                "argument 'aspect' is invalid.",
-                "choose one of the listed aspects",
-                JsonSerializer.SerializeToElement(new { argument = "aspect", given = GetOptionalString(args, "aspect"), expected = ValidationAspect.Accepted })));
+            return ToolResult.Fail(Errors.EnvelopeRenderer.InvalidArgument("aspect", GetOptionalString(args, "aspect"), ValidationAspect.Accepted, "choose one of the listed aspects"));
         }
 
         await EnsureLoadedAsync(ct).ConfigureAwait(false);

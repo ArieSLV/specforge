@@ -8,7 +8,7 @@ namespace Specforge.Core.Exceptions;
 public sealed class SpecforgeEmbeddedSkillNotFoundException : SpecforgeException
 {
     public SpecforgeEmbeddedSkillNotFoundException(string resourceName, string message, Exception? innerException = null)
-        : base("specforge.skills.catalog_missing", message, innerException)
+        : base(Diagnostics.SpecforgeErrorCode.SkillsCatalogMissing, message, innerException)
     {
         ResourceName = resourceName;
     }

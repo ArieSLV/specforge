@@ -153,9 +153,6 @@ public sealed class InitTool(IInitService initService, SpecforgeWorkingDirectory
         }
     }
 
-    private static ToolResult Invalid(string argument, string expected) => ToolResult.Fail(new McpErrorEnvelope(
-        "specforge.tool.invalid_argument",
-        $"argument '{argument}' is invalid; expected {expected}.",
-        "correct the argument value",
-        JsonSerializer.SerializeToElement(new { argument, expected })));
+    private static ToolResult Invalid(string argument, string expected) =>
+        ToolResult.Fail(Errors.EnvelopeRenderer.InvalidArgument(argument, given: null, expected));
 }

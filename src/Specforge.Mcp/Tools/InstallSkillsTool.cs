@@ -88,9 +88,6 @@ public sealed class InstallSkillsTool(ISkillInstaller installer) : IMcpTool
         }
     }
 
-    private static ToolResult InvalidAgent(string given) => ToolResult.Fail(new McpErrorEnvelope(
-        "specforge.tool.invalid_argument",
-        $"argument 'agent' must be one of: claude-code, codex, all (got '{given}').",
-        "correct the agent value",
-        JsonSerializer.SerializeToElement(new { argument = "agent", given, expected = "claude-code | codex | all" })));
+    private static ToolResult InvalidAgent(string given) =>
+        ToolResult.Fail(Errors.EnvelopeRenderer.InvalidArgument("agent", given, "claude-code | codex | all", "correct the agent value"));
 }
