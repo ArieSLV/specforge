@@ -32,7 +32,7 @@ public class OrphanCodeTests
     }
 
     [Fact]
-    public void NoProducedCode_IsAbsentFromTheCatalog()
+    public void EveryProducedCode_IsInTheCatalog()
     {
         foreach (string code in ProducibleCodes())
         {

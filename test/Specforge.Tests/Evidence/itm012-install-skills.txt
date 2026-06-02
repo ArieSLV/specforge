@@ -1,0 +1,20 @@
+ITEM-012 evidence - install_skills agent=all (dryRun=true) plans 7 skills x 2 agents = 14 paths
+===============================================================================================
+
+Driver: D:\Work\specforge\bin\specforge.exe over a SERIAL MCP stdio session. dryRun=true is used so the
+real user profile is NOT modified (install_skills resolves targets via Environment.SpecialFolder.UserProfile,
+which the MCP host cannot redirect at runtime; actual byte-for-byte writing is covered by ITEM-005's unit
+tests through the DI-swappable ISkillInstallTargetResolver). Date: 2026-05-30
+
+--- install_skills { agent: "all", dryRun: true } ---
+{"agents":{"claude-code":{"writtenCount":7,"writtenPaths":["C:\\Users\\<user>\\.claude\\skills\\adopt-existing-project\\SKILL.md","C:\\Users\\<user>\\.claude\\skills\\draft-decision\\SKILL.md","C:\\Users\\<user>\\.claude\\skills\\draft-item\\SKILL.md","C:\\Users\\<user>\\.claude\\skills\\impact-assessment\\SKILL.md","C:\\Users\\<user>\\.claude\\skills\\review-decision\\SKILL.md","C:\\Users\\<user>\\.claude\\skills\\review-item\\SKILL.md","C:\\Users\\<user>\\.claude\\skills\\validate-spec-graph\\SKILL.md"],"overwrittenPaths":[]},"codex":{"writtenCount":7,"writtenPaths":["C:\\Users\\<user>\\.agents\\skills\\adopt-existing-project\\SKILL.md","C:\\Users\\<user>\\.agents\\skills\\draft-decision\\SKILL.md","C:\\Users\\<user>\\.agents\\skills\\draft-item\\SKILL.md","C:\\Users\\<user>\\.agents\\skills\\impact-assessment\\SKILL.md","C:\\Users\\<user>\\.agents\\skills\\review-decision\\SKILL.md","C:\\Users\\<user>\\.agents\\skills\\review-item\\SKILL.md","C:\\Users\\<user>\\.agents\\skills\\validate-spec-graph\\SKILL.md"],"overwrittenPaths":[]}},"binaryVersion":"1.0.0\u002B2ff99971229877f93c751cc76730082ade18edd2"}
+
+--- planned target counts ---
+  claude-code: 7 paths
+  codex:       7 paths
+  total:       14 paths
+
+--- VERIFICATION ---
+[PASS] 14 planned target paths (7 skills x claude-code + codex) — the embedded catalog grew from empty to 7 (ITEM-012).
+[PASS] dryRun=true performed no filesystem writes (preview only).
+[PASS] Actual deployment + always-overwrite reinstall are proven by ITEM-005's installer unit tests.

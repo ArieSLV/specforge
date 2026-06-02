@@ -1,0 +1,21 @@
+ITEM-012 evidence - the 7 embedded SKILL.md bodies (name + description frontmatter)
+===================================================================================
+
+Source: spec/skills/<kebab>/SKILL.md (embedded into Specforge.Core.dll by ITEM-004's glob; validated at
+server startup by SkillCatalogValidator; name must match the directory and description must be <= 200
+chars per DEC-005 / ITEM-004). Date: 2026-05-30
+
+--- catalog (7 skills) ---
+  draft-decision           name=draft-decision  (description 192 chars <= 200)
+  review-decision          name=review-decision  (description 177 chars <= 200)
+  draft-item               name=draft-item  (description 187 chars <= 200)
+  review-item              name=review-item  (description 174 chars <= 200)
+  impact-assessment        name=impact-assessment  (description 191 chars <= 200)
+  validate-spec-graph      name=validate-spec-graph  (description 179 chars <= 200)
+  adopt-existing-project   name=adopt-existing-project  (description 155 chars <= 200)
+
+--- VERIFICATION ---
+[PASS] 7 SKILL.md bodies exist, one per DEC-008 MVP skill (catalog amended 6 -> 7 to add review-item).
+[PASS] Each frontmatter name matches its directory; each description is <= 200 chars.
+[PASS] SkillContentReferenceTests proves every backticked tool name, shared-doc path, and cross-skill
+       reference in every body resolves (21-tool catalog / spec-shared+templates / 7-skill set).
