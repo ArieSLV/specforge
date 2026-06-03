@@ -4,7 +4,7 @@ Status: Draft
 
 | LedgerId | Artifact | Status | Depends on | Owner / reviewer | Last update | Next action | Blocking question |
 |---|---|---|---|---|---|---|---|
-| `ART-README-TOP` | `README.md` | Draft | - | User | 2026-05-28: revision planned per ITEM-013 approval (tagline + install snippet + quick links + Status sentence) — content change to be executed in Stage 2 | Keep synchronized as project entry point; revise per ITEM-013 in Stage 2 | |
+| `ART-README-TOP` | `README.md` | Draft | - | User | 2026-05-30: **revised** per ITEM-013 (CMT-013, `239e5a8`) — tagline + "What is specforge?" + quick start (install one-liner + `.mcp.json` snippet) + requirements + documentation links + License placeholder + single-sentence Status; content-drift guarded by `DocsContentReferenceTests`. Originally created 2026-05-25; revision planned 2026-05-28 at ITEM-013 approval. | Keep synchronized as project entry point; re-check on catalog/skill changes (drift test enforces tool/skill/path spelling) | |
 | `ART-PACKAGE-README` | `spec/packages/specforge-mvp/README.md` | Draft | `ART-README-TOP` | User | 2026-05-25: created | Use as package entry point | |
 | `ART-WORK-PLAN` | `spec/packages/specforge-mvp/work_plan.md` | Draft | `ART-PACKAGE-README` | User | 2026-05-25: created | Use as Stage 0 control plan | |
 | `ART-WORK-LEDGER` | `spec/packages/specforge-mvp/work_ledger.md` | Draft | `ART-LEDGER-README` | User | 2026-05-25: created | Sync from detailed ledger as work proceeds | |
@@ -23,7 +23,7 @@ Status: Draft
 | `ART-SKILL-IMPACT-ASSESSMENT` | `spec/skills/impact-assessment/SKILL.md` | Draft | `ART-ITEM-012` | User | 2026-05-28: planned per ITEM-012 approval | Skill body authored in Stage 2 (CMT-012); refine alongside the tool catalog | |
 | `ART-SKILL-VALIDATE-SPEC-GRAPH` | `spec/skills/validate-spec-graph/SKILL.md` | Draft | `ART-ITEM-012` | User | 2026-05-28: planned per ITEM-012 approval | Skill body authored in Stage 2 (CMT-012); refine alongside the tool catalog | |
 | `ART-SKILL-ADOPT-EXISTING-PROJECT` | `spec/skills/adopt-existing-project/SKILL.md` | Draft | `ART-ITEM-012` | User | 2026-05-28: planned per ITEM-012 approval | Skill body authored in Stage 2 (CMT-012); refine alongside the tool catalog | |
-| `ART-DOCS-GETTING-STARTED` | `docs/getting-started.md` | Not started | `ART-ITEM-013` | User | 2026-05-28: planned per ITEM-013 approval | Author file in Stage 2 per ITEM-013 outline | |
+| `ART-DOCS-GETTING-STARTED` | `docs/getting-started.md` | Draft | `ART-ITEM-013` | User | 2026-05-30: **authored** per ITEM-013 (CMT-013, `239e5a8`) — install + register + bootstrap quartet + first-decision/first-item authoring + validate + undo + upgrade ritual; promoted Not started → Draft. Planned 2026-05-28 at ITEM-013 approval. | Keep synchronized with the tool/skill catalogs (drift test enforces spelling); refine as adopters surface gaps | |
 | `ART-LEDGER-README` | `spec/packages/specforge-mvp/ledger/README.md` | Draft | `ART-LIFECYCLE` | User | 2026-05-25: ledger schema initialized | Keep schema synchronized with ledger files | |
 | `ART-LEDGER-ARTIFACTS` | `spec/packages/specforge-mvp/ledger/artifacts.md` | Draft | `ART-LEDGER-README` | User | 2026-05-25: initial rows added | Append on new artifacts | |
 | `ART-LEDGER-ITEMS` | `spec/packages/specforge-mvp/ledger/items.md` | Draft | `ART-LEDGER-README` | User | 2026-05-28: promoted from Placeholder → Draft on first append (ITEM-001 entered draft) | Append on new items | |
