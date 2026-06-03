@@ -1,0 +1,144 @@
+ITEM-013 evidence - bootstrap quartet (init -> install_skills -> use_package -> validate)
+=================================================================================
+
+Driver: D:\Work\specforge\bin\specforge.exe over a SERIAL MCP stdio session (one frame -> one response, DEC-003).
+Fresh temp-dir project (no pre-existing .specforge.json). install_skills uses dryRun=true so the REAL user
+profile is NOT modified (targets resolve via Environment.SpecialFolder.UserProfile, which the host cannot
+redirect at runtime; byte-for-byte writing is covered by ITEM-005 unit tests). Matches docs/getting-started.md.
+Project dir: C:\Users\<USER>\AppData\Local\Temp\sf-itm013-48e5ceb3
+Date: 2026-05-30
+
+--- info {} (before init: no config discovered) ---
+{
+  "binaryVersion": "1.0.0+571cc10cf85b1bf05c596f951c3e0b3aeec81c59",
+  "supportedSchemaVersionRange": [
+    1,
+    1
+  ],
+  "activePackage": null,
+  "configPath": null
+}
+
+--- init { packages:[{name:demo-app, path:spec/packages/demo-app}], scaffold:true, behavioralFiles:all } ---
+{
+  "dryRun": false,
+  "writtenPaths": [
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\.specforge.json",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\agents\\openai.yaml",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\SPECFORGE.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\CLAUDE.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\AGENTS.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\README.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\work_plan.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\work_ledger.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\decisions\\README.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\items\\README.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\ledger\\README.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\ledger\\artifacts.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\ledger\\items.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\ledger\\commits.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\ledger\\reviews.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\ledger\\history.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\shared\\document_lifecycle.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\shared\\glossary.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\shared\\impact_assessment_checklist.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\shared\\spec_item_contract.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\templates\\decision_record.md",
+    "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\templates\\item_spec.md"
+  ],
+  "overwrittenPaths": [],
+  "skippedPaths": [],
+  "config": {
+    "writtenCount": 1,
+    "writtenPaths": [
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\.specforge.json"
+    ],
+    "overwrittenPaths": [],
+    "skippedPaths": []
+  },
+  "behavioral": {
+    "writtenCount": 4,
+    "writtenPaths": [
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\agents\\openai.yaml",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\SPECFORGE.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\CLAUDE.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\AGENTS.md"
+    ],
+    "overwrittenPaths": [],
+    "skippedPaths": []
+  },
+  "scaffold": {
+    "writtenCount": 17,
+    "writtenPaths": [
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\README.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\work_plan.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\work_ledger.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\decisions\\README.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\items\\README.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\ledger\\README.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\ledger\\artifacts.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\ledger\\items.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\ledger\\commits.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\ledger\\reviews.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\packages\\demo-app\\ledger\\history.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\shared\\document_lifecycle.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\shared\\glossary.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\shared\\impact_assessment_checklist.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\shared\\spec_item_contract.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\templates\\decision_record.md",
+      "C:\\Users\\<user>\\AppData\\Local\\Temp\\sf-itm013-48e5ceb3\\spec\\templates\\item_spec.md"
+    ],
+    "overwrittenPaths": [],
+    "skippedPaths": []
+  }
+}
+
+--- install_skills { agent:all, dryRun:true } (preview only; 7 skills x 2 agents = 14 paths) ---
+{
+  "agents": {
+    "claude-code": {
+      "writtenCount": 7,
+      "writtenPaths": [
+        "C:\\Users\\<user>\\.claude\\skills\\adopt-existing-project\\SKILL.md",
+        "C:\\Users\\<user>\\.claude\\skills\\draft-decision\\SKILL.md",
+        "C:\\Users\\<user>\\.claude\\skills\\draft-item\\SKILL.md",
+        "C:\\Users\\<user>\\.claude\\skills\\impact-assessment\\SKILL.md",
+        "C:\\Users\\<user>\\.claude\\skills\\review-decision\\SKILL.md",
+        "C:\\Users\\<user>\\.claude\\skills\\review-item\\SKILL.md",
+        "C:\\Users\\<user>\\.claude\\skills\\validate-spec-graph\\SKILL.md"
+      ],
+      "overwrittenPaths": []
+    },
+    "codex": {
+      "writtenCount": 7,
+      "writtenPaths": [
+        "C:\\Users\\<user>\\.agents\\skills\\adopt-existing-project\\SKILL.md",
+        "C:\\Users\\<user>\\.agents\\skills\\draft-decision\\SKILL.md",
+        "C:\\Users\\<user>\\.agents\\skills\\draft-item\\SKILL.md",
+        "C:\\Users\\<user>\\.agents\\skills\\impact-assessment\\SKILL.md",
+        "C:\\Users\\<user>\\.agents\\skills\\review-decision\\SKILL.md",
+        "C:\\Users\\<user>\\.agents\\skills\\review-item\\SKILL.md",
+        "C:\\Users\\<user>\\.agents\\skills\\validate-spec-graph\\SKILL.md"
+      ],
+      "overwrittenPaths": []
+    }
+  },
+  "binaryVersion": "1.0.0+571cc10cf85b1bf05c596f951c3e0b3aeec81c59"
+}
+
+--- use_package { name:demo-app } ---
+{
+  "previous": "demo-app",
+  "current": "demo-app"
+}
+
+--- validate { aspect:all } (clean baseline => errorCount 0) ---
+{
+  "aspect": "all",
+  "errorCount": 0,
+  "warningCount": 0,
+  "infoCount": 0,
+  "message": "clean",
+  "findings": []
+}
+
