@@ -45,7 +45,15 @@ Register specforge **once, user-wide** — not per project.
 
 ### Claude Code
 
-Add an entry to your user-scope `~/.claude/.mcp.json`:
+Register specforge once, user-wide, with the Claude Code CLI:
+
+```powershell
+claude mcp add specforge --scope user -- D:\Work\specforge\bin\specforge.exe
+```
+
+This is the version-stable method — Claude Code manages the underlying user config for you (on current versions that is `~/.claude.json`). Confirm with `claude mcp list`: specforge should appear, and your host's tool list should then expose 21 specforge tools.
+
+Hosts that read a user-scope `.mcp.json` file directly can instead add this entry. The server identifies the target package per tool call, not from launch arguments, so `args` stays empty:
 
 ```json
 {
@@ -57,8 +65,6 @@ Add an entry to your user-scope `~/.claude/.mcp.json`:
   }
 }
 ```
-
-The server identifies the target package per tool call, not from launch arguments — so `args` stays empty.
 
 ### Codex CLI
 

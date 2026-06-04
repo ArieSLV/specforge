@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# Windows-only MVP (DEC-001: win-x64 self-contained binary).
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET (pinned by global.json)
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore Specforge.sln
+
+      # TreatWarningsAsErrors is on in Directory.Build.props, so this step is the
+      # zero-warning gate as well as the build.
+      - name: Build (Release)
+        run: dotnet build Specforge.sln -c Release --no-restore
+
+      # The dogfood spec-graph check (DogfoodValidationTests) runs inside the test
+      # project, so this step also asserts validate(aspect=all) stays clean.
+      - name: Test (Release)
+        run: dotnet test test/Specforge.Tests/Specforge.Tests.csproj -c Release --no-build
+
+      - name: Publish self-contained binary (smoke)
+        run: dotnet publish src/Specforge.Mcp/Specforge.Mcp.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o bin

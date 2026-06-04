@@ -16,7 +16,14 @@ Publish the binary (PowerShell). This bare form is the fast path for a machine t
 dotnet publish src/Specforge.Mcp/Specforge.Mcp.csproj -c Release -o D:\Work\specforge\bin\
 ```
 
-Register it once, user-wide, in your host's MCP config (`~/.claude/.mcp.json` for Claude Code):
+Register it once, user-wide. With current Claude Code use the CLI (it manages the underlying user config for you), then confirm:
+
+```powershell
+claude mcp add specforge --scope user -- D:\Work\specforge\bin\specforge.exe
+claude mcp list
+```
+
+Hosts that read a user-scope `.mcp.json` directly can instead use this entry (see the guide for details):
 
 ```json
 {
@@ -43,7 +50,7 @@ Then open the project in your host and run `init` to bootstrap. The full sequenc
 
 ## License
 
-License selection is out of MVP scope and tracked separately. _(placeholder)_
+specforge is released under the MIT License — see [`LICENSE`](LICENSE).
 
 ## Status
 
