@@ -1,5 +1,7 @@
 # specforge
 
+[![CI](https://github.com/ArieSLV/specforge/actions/workflows/ci.yml/badge.svg)](https://github.com/ArieSLV/specforge/actions/workflows/ci.yml)
+
 Spec-driven development MCP server for AI-assisted .NET architecture work.
 
 ## What is specforge?
