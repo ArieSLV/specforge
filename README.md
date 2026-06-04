@@ -56,4 +56,4 @@ specforge is released under the MIT License — see [`LICENSE`](LICENSE).
 
 ## Status
 
-MVP under development (Stage 1 spec complete; Stage 2 implementation in progress).
+MVP code-complete: Stage 1 (specification) and Stage 2 (implementation) are done — 21 MCP tools, 7 skills, read-only spec-graph validation, 356 tests green in CI. Next up is Stage 3 (first external adoption).
