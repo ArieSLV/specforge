@@ -2,16 +2,16 @@
 
 Status: Approved
 Review owner: User
-Depends on: `ITEM-002-CONFIG-MODEL`, `ITEM-003-ID-VALIDATOR`, `ITEM-004-EMBEDDED-SKILL-CATALOG`, `ITEM-005-SKILL-INSTALLER`, `ITEM-007-DECISION-TOOLS`, `ITEM-009-LEDGER-APPEND-TOOLS`, `ITEM-010-VALIDATE-TOOL`, `DEC-007-MVP-TOOL-SET`
+Depends on: `ITEM-002-CONFIG-MODEL`, `ITEM-003-ID-VALIDATOR`, `ITEM-004-EMBEDDED-SKILL-CATALOG`, `ITEM-005-SKILL-INSTALLER`, `ITEM-006-INIT-TOOL`, `ITEM-007-DECISION-TOOLS`, `ITEM-009-LEDGER-APPEND-TOOLS`, `ITEM-010-VALIDATE-TOOL`, `DEC-007-MVP-TOOL-SET`
 Updates ledger rows: new `ART-ITEM-011`; amends `ART-DEC-007` (adds `specforge.id.not_found` to the catalog); new `CMT-NNN` rows for implementation commits
 
 ## Handoff Summary
 
-Ship the error-envelope consolidation pass that the prior nine items deferred. ITEM-011 is an audit-and-centralization item — no new MCP tools, no new NuGet packages. It pulls the `ToolExceptionMapper` arms that accumulated incrementally across ITEM-002 → ITEM-010 into a single canonical surface, introduces a `SpecforgeErrorCode` static class as the one-and-only string constant store, defines an `IEnvelopeRenderer` for converting Core exceptions into the JSON envelope shape, and adds three invariant tests that prevent the catalog from drifting: (1) every typed `Specforge*Exception` in Core has a mapper arm; (2) every code in `SpecforgeErrorCode` appears in DEC-007's catalog table; (3) every code in DEC-007's catalog has at least one production path that produces it. The audit also discovers and closes a real gap: ITEM-009's `delete_review` / `delete_commit` emit `specforge.id.not_found` for missing rows, but DEC-007's catalog table never listed that code. ITEM-011 amends DEC-007 with a 14th entry plus introduces a `SpecforgeIdNotFoundException` (12th typed exception) so the code has a typed source. Finally, ITEM-011 locks the `tool.internal_error` fallback path: any unhandled exception bubbles to a single catch site that emits the envelope with a generated `correlationId` GUID and writes the full exception detail (type, message, stack trace) to stderr tagged with the same GUID per DEC-003.
+Ship the error-envelope consolidation pass that the prior nine items deferred. ITEM-011 is an audit-and-centralization item — no new MCP tools, no new NuGet packages. It pulls the `ToolExceptionMapper` arms that accumulated incrementally across ITEM-002 → ITEM-010 into a single canonical surface, introduces a `SpecforgeErrorCode` static class as the one-and-only string constant store, defines an `IEnvelopeRenderer` for converting Core exceptions into the JSON envelope shape, and adds three invariant tests that prevent the catalog from drifting: (1) every typed `Specforge*Exception` in Core has a mapper arm; (2) every code in `SpecforgeErrorCode` appears in DEC-007's catalog table; (3) every code in DEC-007's catalog has at least one production path that produces it. The audit also discovers and closes a real gap: ITEM-009's `delete_review` / `delete_commit` emit `specforge.id.not_found` for missing rows, but DEC-007's catalog table never listed that code. ITEM-011 amends DEC-007 with a 14th entry plus introduces a `SpecforgeIdNotFoundException` (13th typed exception) so the code has a typed source. Finally, ITEM-011 locks the `tool.internal_error` fallback path: any unhandled exception bubbles to a single catch site that emits the envelope with a generated `correlationId` GUID and writes the full exception detail (type, message, stack trace) to stderr tagged with the same GUID per DEC-003.
 
 - 0 new tools (tool count stays at 21).
 - 0 new NuGet packages.
-- 1 new typed exception: `SpecforgeIdNotFoundException` (12th).
+- 1 new typed exception: `SpecforgeIdNotFoundException` (13th).
 - 1 amendment to DEC-007: adds `specforge.id.not_found` to the catalog (13 → 14 codes).
 - 3 new invariant tests prevent future drift.
 
@@ -45,7 +45,7 @@ Explicit non-goals (out of MVP or owned by other items):
 
 After `ITEM-010` lands:
 
-- `Specforge.Core/Exceptions/` carries 11 typed exception classes:
+- `Specforge.Core/Exceptions/` carries 12 typed exception classes:
   1. `SpecforgeConfigNotFoundException`
   2. `SpecforgeConfigValidationException`
   3. `SpecforgeSchemaVersionException`
@@ -56,8 +56,9 @@ After `ITEM-010` lands:
   8. `SpecforgeKindExhaustedException`
   9. `SpecforgeEmbeddedSkillNotFoundException`
   10. `SpecforgeSkillInstallException`
-  11. `SpecforgeDeleteForbiddenException`
-- `Specforge.Mcp/Tools/ToolExceptionMapper.cs` (or equivalent — file name set by ITEM-002 and extended by every subsequent tool item) carries 11 mapper arms plus 2 generic-emission paths (`tool.invalid_argument`, `tool.internal_error`).
+  11. `SpecforgeInvalidArgumentException`
+  12. `SpecforgeDeleteForbiddenException`
+- `Specforge.Mcp/Tools/ToolExceptionMapper.cs` (or equivalent — file name set by ITEM-002 and extended by every subsequent tool item) carries 12 mapper arms (one per typed exception, including `SpecforgeInvalidArgumentException`) plus the `tool.internal_error` catch-all. `tool.invalid_argument` has two emission routes: the `SpecforgeInvalidArgumentException` arm (argument-shaped failures raised deep in Core) and direct tool-side emission at argument-validation sites.
 - Code-literal strings (`"specforge.config.not_found"` etc.) appear in multiple files: the mapper, individual tools (for `tool.invalid_argument` emissions), `SpecforgeDeleteForbiddenException.ErrorCode`, etc. ITEM-011 collapses them all to constant references.
 - ITEM-009 `delete_review` / `delete_commit` emit `specforge.id.not_found` via tool-side inline checks (no typed exception currently produces this code). DEC-007's catalog table at line 70-84 does NOT list this code — it is a real gap.
 - No invariant tests prevent drift between the mapper, the code constants, and DEC-007's catalog.
@@ -88,17 +89,17 @@ After this item is Done:
        public static IReadOnlySet<string> AllCodes { get; } = /* reflection-built */;
    }
    ```
-2. **`SpecforgeIdNotFoundException`** (new in `Specforge.Core/Exceptions/`): the 12th typed exception. Fields: `string Id`. Constructor: `(string id, string? message = null)`. `ErrorCode` property returns `"specforge.id.not_found"`. ITEM-009's `delete_review` / `delete_commit` implementations are updated in Stage 2 to throw this exception instead of emitting the code inline (the catalog audit test guarantees this).
+2. **`SpecforgeIdNotFoundException`** (new in `Specforge.Core/Exceptions/`): the 13th typed exception. Fields: `string Id`. Constructor: `(string id, string? message = null)`. `ErrorCode` property returns `"specforge.id.not_found"`. ITEM-009's `delete_review` / `delete_commit` implementations are updated in Stage 2 to throw this exception instead of emitting the code inline (the catalog audit test guarantees this).
 3. **`IEnvelopeRenderer`** + **`EnvelopeRenderer`** (new in `Specforge.Mcp/Errors/`):
    - `EnvelopeJson Render(Exception ex)` — accepts any exception; returns the rendered envelope.
    - For known typed exceptions: dispatches via `ToolExceptionMapper`; returns `{ code, message, suggestion?, data? }` per the per-code contract in DEC-007 §"Error-Code Catalog".
    - For unknown exceptions: returns `{ code = "specforge.tool.internal_error", message = "Unexpected error.", suggestion = "check the specforge stderr log entry tagged with the correlation id", data = { correlationId = <fresh GUID> } }` AND writes a stderr log line `[ERROR] correlationId=<GUID> exceptionType=<typename> message=<message>\n<stacktrace>` per the DEC-003 stderr-only convention.
 4. **`ToolExceptionMapper`** (consolidated; file path: `Specforge.Mcp/Errors/ToolExceptionMapper.cs`):
    - A single `switch` on the exception's `GetType()` returning a `MappedError` record `{ Code, Suggestion?, BuildData(ex) => object? }`.
-   - 12 typed-exception arms covering every type in `Specforge.Core/Exceptions/`.
+   - 13 typed-exception arms covering every type in `Specforge.Core/Exceptions/`.
    - Throws `InvalidOperationException` (becomes `tool.internal_error` at the catch site) for unknown types — this is the safety net the `IEnvelopeRenderer` catches; production code should never hit it because the orphan-exception invariant test guarantees coverage.
 5. **`SpecforgeDeleteForbiddenException.ErrorCode`** stays as a class-level constant pointing to `SpecforgeErrorCode.LifecycleDeleteForbidden`. Same for any other typed exception that exposes an `ErrorCode` property — single source of truth.
-6. **Tool-side `tool.invalid_argument` emission** (the only code Core never raises) goes through a single helper `EnvelopeRenderer.InvalidArgument(string argument, object? given, string expected, string? suggestion = null)`. Every tool's argument-validation site calls this helper instead of constructing the envelope manually.
+6. **Tool-side `tool.invalid_argument` emission** goes through a single helper `EnvelopeRenderer.InvalidArgument(string argument, object? given, string expected, string? suggestion = null)`. Every tool's argument-validation site calls this helper instead of constructing the envelope manually. (The same code is also raised deep in Core via `SpecforgeInvalidArgumentException`; `tool.internal_error` is the only code with no typed Core source.)
 7. **DEC-007 amendment**: ITEM-011 updates the DEC-007 catalog table (lines 70-84 in the current file) to add a new row:
 
    | Code | Triggering Core exception | `data` shape | Default suggestion |
@@ -123,7 +124,7 @@ After this item is Done:
 
 `Specforge.Core` (new):
 
-- `Exceptions/SpecforgeIdNotFoundException.cs` — 12th typed exception. `ErrorCode` property exposes the canonical string.
+- `Exceptions/SpecforgeIdNotFoundException.cs` — 13th typed exception. `ErrorCode` property exposes the canonical string.
 
 `Specforge.Mcp` (new):
 
@@ -241,7 +242,7 @@ The item is **Done** (post-Approved) when:
 6. `Specforge.Mcp` registers twenty-one tools (catalog unchanged from ITEM-010).
 7. DEC-007's Error-Code Catalog table contains 14 rows; `specforge.id.not_found` is the 14th.
 8. `SpecforgeErrorCode.AllCodes.Count == 14`.
-9. `Specforge.Core/Exceptions/` contains 12 typed exception classes; the new one is `SpecforgeIdNotFoundException`.
+9. `Specforge.Core/Exceptions/` contains 13 typed exception classes; the new one is `SpecforgeIdNotFoundException`.
 10. All 5 invariant tests pass.
 11. Both smoke transcripts exist under `test/Specforge.Tests/Evidence/`.
 12. A `CMT-NNN` row is appended to `ledger/commits.md`.
@@ -255,7 +256,8 @@ The item is **Done** (post-Approved) when:
 - `./ITEM-003-ID-VALIDATOR.md` (approved) — 3 more typed exceptions; 3 more mapper arms.
 - `./ITEM-004-EMBEDDED-SKILL-CATALOG.md` (approved) — 1 more typed exception; 1 more mapper arm.
 - `./ITEM-005-SKILL-INSTALLER.md` (approved) — 1 more typed exception; 1 more mapper arm.
-- `./ITEM-007-DECISION-TOOLS.md` (approved) — `SpecforgeDeleteForbiddenException` (11th typed exception); 13th mapper arm; `LedgerTableParser` reused by `CatalogDriftTests`.
+- `./ITEM-006-INIT-TOOL.md` (approved) — `SpecforgeInvalidArgumentException` (11th typed exception); 11th mapper arm; the deep-Core carrier for `tool.invalid_argument` (e.g. tagged-block imbalance per DEC-008).
+- `./ITEM-007-DECISION-TOOLS.md` (approved) — `SpecforgeDeleteForbiddenException` (12th typed exception); 12th mapper arm; `LedgerTableParser` reused by `CatalogDriftTests`.
 - `./ITEM-009-LEDGER-APPEND-TOOLS.md` (approved) — first emission of the previously-undocumented `id.not_found` code; refactored here to use the new typed exception.
 - `./ITEM-010-VALIDATE-TOOL.md` (approved) — `TombstoneDetailFormat` pattern reused as a model for the centralized formatting approach.
 - `../../../shared/impact_assessment_checklist.md` — aspects checklist.

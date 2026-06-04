@@ -85,12 +85,14 @@ A standardized install location (`%LOCALAPPDATA%\specforge\` or similar) is defe
 
 ### Registration with MCP Host
 
-specforge is registered **once, user-wide**, in the host's user-level MCP configuration file.
+specforge is registered **once, user-wide** — not per project. One global registration makes the toolkit available in every project the host opens; per-project `.mcp.json` files are NOT required and SHOULD NOT be used for specforge.
 
-- For Claude Code, this is `~/.claude/.mcp.json` (or the host's equivalent user-scope config).
-- Per-project `.mcp.json` files are NOT required and SHOULD NOT be used for specforge — one global registration makes the toolkit available in every project the host opens.
+The registration *mechanism* is host-specific:
 
-Illustrative registration entry shape (exact key names follow the MCP SDK at implementation time):
+- **Claude Code (canonical).** Register with the CLI — `claude mcp add specforge --scope user -- D:\Work\specforge\bin\specforge.exe` — and confirm with `claude mcp list`. This is the version-stable method; Claude Code manages the underlying user-scope config for you (on current versions, `~/.claude.json`). The original draft of this record cited `~/.claude/.mcp.json`; real-host validation (Claude Code 2.1.150) showed that path does not exist — see the Amendments section.
+- **Hosts that read a user-scope `.mcp.json` directly.** Add an entry of the shape below.
+
+Illustrative user-scope `.mcp.json` entry shape (exact key names follow the host's config format):
 
 ```text
 "specforge": {
@@ -99,7 +101,7 @@ Illustrative registration entry shape (exact key names follow the MCP SDK at imp
 }
 ```
 
-The server identifies the target package per tool call, not via launch arguments. The discovery mechanism is the subject of `DEC-002-CONFIGURATION-AND-DISCOVERY`.
+The server identifies the target package per tool call, not via launch arguments, so `args` stays empty. The discovery mechanism is the subject of `DEC-002-CONFIGURATION-AND-DISCOVERY`.
 
 ### Multi-Agent Strategy
 
@@ -195,8 +197,12 @@ Summary for MVP: one cross-agent MCP server plus skills for Claude Code and Code
 
 - Manual: spawn the published executable, verify it speaks MCP stdio against a known good MCP host harness.
 - Automated: smoke test that confirms `tools/list` returns at least one tool after the server starts.
-- Validation: register the published exe in the user's `~/.claude/.mcp.json`, confirm Claude Code lists specforge tools.
+- Validation: register the published exe user-wide with `claude mcp add specforge --scope user -- <publish-dir>\specforge.exe`, then confirm with `claude mcp list` that specforge is connected and Claude Code lists its tools. (Validated on Claude Code 2.1.150 — see Amendments.)
 
 ## Open Questions
 
 None blocking. Deferred questions all live in later decisions (DEC-002, DEC-003, DEC-006, DEC-007).
+
+## Amendments
+
+- **2026-06-04 — Registration mechanism corrected (additive; status remains `Approved`).** The original record (2026-05-25) stated that Claude Code registers specforge in `~/.claude/.mcp.json`. Real-host validation on Claude Code 2.1.150 showed that file does not exist: the host registers MCP servers via the `claude mcp add` CLI, which stores user-scope servers in `~/.claude.json`. The "Registration with MCP Host" and "Related Tests / Validation" sections now lead with `claude mcp add specforge --scope user` as the canonical, version-stable method, keeping a host-read user-scope `.mcp.json` entry as a documented fallback. The decision itself is unchanged — specforge is still registered **once, user-wide**, and still identifies its target package per tool call (empty `args`); only the file/CLI mechanism was mis-stated. This is an in-place additive amendment per the DEC-007 / DEC-008 precedent (the enforced lifecycle has no `Approved → Draft` transition, so a `set_decision_status` round-trip is not available). User-facing docs (`README.md`, `docs/getting-started.md`) were reconciled the same day; this amendment brings DEC-001 into line and supersedes the tracking Note recorded against `ART-DEC-001` in `history.md`.
